@@ -1,0 +1,202 @@
+import { useState } from "react";
+import { supabase } from "../supabase.js";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
+export default function Cadastro() {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [bloco, setBloco] = useState("");
+  const [apartamento, setApartamento] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleCadastro = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (!email || !cpf || !bloco || !apartamento || !senha || !confirmarSenha) {
+        Swal.fire("Atenção", "Preencha todos os campos.", "warning");
+        setLoading(false);
+        return;
+      }
+
+      if (senha !== confirmarSenha) {
+        Swal.fire("Erro", "As senhas não conferem.", "error");
+        setLoading(false);
+        return;
+      }
+
+      // Verifica duplicidade de e-mail e CPF
+      const { data: emailExistente } = await supabase
+        .from("usuarios")
+        .select("id")
+        .eq("email", email)
+        .maybeSingle();
+
+      const { data: cpfExistente } = await supabase
+        .from("usuarios")
+        .select("id")
+        .eq("cpf", cpf)
+        .maybeSingle();
+
+      if (emailExistente) {
+        Swal.fire("Erro", "Este e-mail já está cadastrado.", "error");
+        setLoading(false);
+        return;
+      }
+
+      if (cpfExistente) {
+        Swal.fire("Erro", "Este CPF já está cadastrado.", "error");
+        setLoading(false);
+        return;
+      }
+
+      // Cria usuário no Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password: senha,
+      });
+      if (authError) throw authError;
+
+      const userId = authData.user?.id;
+      if (!userId) throw new Error("Erro ao criar usuário no Auth.");
+
+      // Insere na tabela usuarios
+      const { error: insertError } = await supabase.from("usuarios").insert([
+        {
+          id: userId,
+          email,
+          cpf,
+          bloco,
+          apartamento,
+          role: "morador",
+          ativo: false,
+          data_cadastro: new Date().toISOString(),
+        },
+      ]);
+
+      if (insertError) throw insertError;
+
+      Swal.fire({
+        title: "Cadastro enviado!",
+        html: `
+          <p>Seu cadastro foi criado e está aguardando aprovação do administrador.</p>
+          <p class="text-gray-600 text-sm mt-2">Você receberá acesso assim que for aprovado.</p>
+        `,
+        icon: "success",
+        confirmButtonColor: "#4f46e5",
+      }).then(() => {
+        navigate("/");
+      });
+    } catch (error) {
+      console.error("Erro ao cadastrar:", error);
+      Swal.fire(
+        "Erro",
+        error.message || "Não foi possível realizar o cadastro.",
+        "error"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 px-4">
+      <div className="w-full max-w-md p-8 sm:p-10 rounded-3xl bg-white/40 backdrop-blur-md shadow-lg border border-white/30">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2 text-center">
+          Crie sua conta<span className="text-indigo-500">.</span>
+        </h1>
+        <p className="text-center text-gray-600 mb-8 sm:mb-10 text-sm sm:text-base">
+          Preencha seus dados para participar das assembleias
+        </p>
+
+        <form onSubmit={handleCadastro} className="flex flex-col gap-4 sm:gap-5">
+          <input
+            type="email"
+            placeholder="E-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            required
+          />
+          <input
+            type="text"
+            placeholder="CPF"
+            value={cpf}
+            onChange={(e) => setCpf(formatarCPF(e.target.value))}
+            maxLength="14"
+            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            required
+          />
+          <input
+            type="text"
+            placeholder="Bloco"
+            value={bloco}
+            onChange={(e) => setBloco(e.target.value)}
+            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            required
+          />
+          <input
+            type="text"
+            placeholder="Apartamento"
+            value={apartamento}
+            onChange={(e) => setApartamento(e.target.value)}
+            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Confirmar senha"
+            value={confirmarSenha}
+            onChange={(e) => setConfirmarSenha(e.target.value)}
+            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            required
+          />
+
+          <div className="flex justify-between text-sm text-indigo-600 mt-2">
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="hover:text-indigo-700 transition"
+            >
+              Já tenho conta
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full mt-4 py-3 sm:py-4 rounded-xl text-white font-semibold text-lg shadow-md transition-transform transform hover:scale-[1.02] ${
+              loading
+                ? "bg-indigo-300 cursor-not-allowed"
+                : "bg-gradient-to-r from-sky-500 to-indigo-500 hover:opacity-90"
+            }`}
+          >
+            {loading ? "Enviando..." : "Cadastrar"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// 🧮 Máscara de CPF
+function formatarCPF(valor) {
+  return valor
+    .replace(/\D/g, "")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}

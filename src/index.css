@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.swal2-popup {
+  border-radius: 1rem !important;
+  font-family: 'Inter', sans-serif;
+}
+.swal2-confirm {
+  background: linear-gradient(to right, #38bdf8, #6366f1) !important;
+  border: none !important;
+}
+
+button {
+  transition: all 0.2s ease-in-out;
+}
+button:hover {
+  transform: scale(1.03);
+}
+
