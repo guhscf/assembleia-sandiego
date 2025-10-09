@@ -65,7 +65,7 @@ export default function Votacao() {
       const { data: jaVotou } = await supabase
         .from("votos")
         .select("id")
-        .eq("id_assembleia", assembleiaAtiva.id)
+        .eq("id_assembleia", assembleiaAtiva.id) // ✅ usa o campo UUID
         .eq("bloco", usuario.bloco)
         .eq("apartamento", usuario.apartamento);
 
@@ -81,7 +81,7 @@ export default function Votacao() {
 
       // 🗳️ Insere o voto
       const { error: insertError } = await supabase.from("votos").insert({
-        id_assembleia: assembleiaAtiva.id,
+        id_assembleia: assembleiaAtiva.id, // ✅ corrigido (UUID real)
         id_usuario: usuario.id,
         bloco: usuario.bloco,
         apartamento: usuario.apartamento,
@@ -175,7 +175,9 @@ export default function Votacao() {
                 </label>
               ))
             ) : (
-              <p className="text-center text-gray-500">Nenhuma opção disponível.</p>
+              <p className="text-center text-gray-500">
+                Nenhuma opção disponível.
+              </p>
             )}
 
             <Button type="submit" disabled={loading} fullWidth className="mt-4">
