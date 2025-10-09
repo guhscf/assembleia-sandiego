@@ -1,14 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase.js";
 
 export default function Navbar({ mostrarVoltar = false }) {
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
 
   const handleLogout = async () => {
-    localStorage.clear();
-    sessionStorage.clear();
-    navigate("/");
+    try {
+      await supabase.auth.signOut(); 
+      localStorage.clear();
+      sessionStorage.clear();
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Erro ao sair:", error.message);
+    }
   };
 
   return (
