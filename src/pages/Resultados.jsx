@@ -103,7 +103,7 @@ export default function Resultados() {
           >
             <option value="">Selecione uma assembleia...</option>
             {assembleias.map((a) => (
-              <option key={a.id} value={a.id_assembleia}>
+              <option key={a.id} value={a.id}>
                 {a.titulo}
               </option>
             ))}
