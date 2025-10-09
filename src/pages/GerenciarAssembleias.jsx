@@ -64,8 +64,8 @@ export default function GerenciarAssembleias() {
     }
   };
 
-  const alternarStatus = async (id, titulo, ativo) => {
-    const novoStatus = !ativo;
+  const alternarStatus = async (id, titulo, ativa) => {
+    const novoStatus = !ativa;
 
     const confirma = await Swal.fire({
       title: `${novoStatus ? "Ativar" : "Inativar"} assembleia?`,
@@ -83,13 +83,13 @@ export default function GerenciarAssembleias() {
     try {
       const { error } = await supabase
         .from("assembleias")
-        .update({ ativo: novoStatus })
+        .update({ ativa: novoStatus })
         .eq("id", id);
 
       if (error) throw error;
 
       setAssembleias((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, ativo: novoStatus } : a))
+        prev.map((a) => (a.id === id ? { ...a, ativa: novoStatus } : a))
       );
 
       Swal.fire(
@@ -194,7 +194,7 @@ export default function GerenciarAssembleias() {
                   >
                     <td className="p-3">{a.titulo}</td>
                     <td className="p-3 text-center">
-                      {a.ativo ? (
+                      {a.ativa ? (
                         <span className="text-green-600 font-medium">Ativa</span>
                       ) : (
                         <span className="text-red-600 font-medium">
@@ -208,11 +208,11 @@ export default function GerenciarAssembleias() {
                     <td className="p-3 text-center space-x-2">
                       <Button
                         onClick={() =>
-                          alternarStatus(a.id, a.titulo, a.ativo)
+                          alternarStatus(a.id, a.titulo, a.ativa)
                         }
                         variant="secondary"
                       >
-                        {a.ativo ? "Inativar" : "Ativar"}
+                        {a.ativa ? "Inativar" : "Ativar"}
                       </Button>
                       <Button
                         onClick={() => verParticipacao(a.id)}
@@ -256,7 +256,7 @@ export default function GerenciarAssembleias() {
                 </p>
                 <p className="text-gray-600 text-sm mt-1">
                   Status:{" "}
-                  {a.ativo ? (
+                  {a.ativa ? (
                     <span className="text-green-600 font-medium">Ativa</span>
                   ) : (
                     <span className="text-red-600 font-medium">Inativa</span>
@@ -269,12 +269,12 @@ export default function GerenciarAssembleias() {
                 <div className="flex flex-col sm:flex-row gap-2 mt-3">
                   <Button
                     onClick={() =>
-                      alternarStatus(a.id, a.titulo, a.ativo)
+                      alternarStatus(a.id, a.titulo, a.ativa)
                     }
                     variant="secondary"
                     fullWidth
                   >
-                    {a.ativo ? "Inativar" : "Ativar"}
+                    {a.ativa ? "Inativar" : "Ativar"}
                   </Button>
                   <Button
                     onClick={() => verParticipacao(a.id)}
