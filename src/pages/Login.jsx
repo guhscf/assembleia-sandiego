@@ -45,12 +45,10 @@ export default function Login() {
       }
 
       Swal.fire({
-        title: "Login realizado!",
-        text: `Bem-vindo(a), ${
-          usuario.role === "admin" ? "Administrador" : "Morador"
-        }!`,
+        title: "Sucesso",
+        text: `Bem-vindo(a), ${usuario.nome || "Usuário"}!`,
         icon: "success",
-        timer: 1200,
+        timer: 2000,
         showConfirmButton: false,
       });
     } catch (error) {

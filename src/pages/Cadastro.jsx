@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
 export default function Cadastro() {
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
@@ -18,7 +19,7 @@ export default function Cadastro() {
     setLoading(true);
 
     try {
-      if (!email || !cpf || !bloco || !apartamento || !senha || !confirmarSenha) {
+      if (!nome || !email || !cpf || !bloco || !apartamento || !senha || !confirmarSenha) {
         Swal.fire("Atenção", "Preencha todos os campos.", "warning");
         setLoading(false);
         return;
@@ -69,6 +70,7 @@ export default function Cadastro() {
       const { error: insertError } = await supabase.from("usuarios").insert([
         {
           id: userId,
+          nome, // 👈 novo campo
           email,
           cpf,
           bloco,
@@ -115,6 +117,14 @@ export default function Cadastro() {
         </p>
 
         <form onSubmit={handleCadastro} className="flex flex-col gap-4 sm:gap-5">
+          <input
+            type="text"
+            placeholder="Nome completo"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            required
+          />
           <input
             type="email"
             placeholder="E-mail"
