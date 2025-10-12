@@ -9,7 +9,6 @@ export default function Usuarios() {
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState("");
 
-  // 🔹 Carrega usuários do banco
   useEffect(() => {
     const carregarUsuarios = async () => {
       try {
@@ -31,7 +30,6 @@ export default function Usuarios() {
     carregarUsuarios();
   }, []);
 
-  // ✅ Aprovar usuário (ativo = true)
   const aprovarUsuario = async (id, email) => {
     const confirma = await Swal.fire({
       title: "Aprovar usuário?",
@@ -65,7 +63,6 @@ export default function Usuarios() {
     }
   };
 
-  // 🗑️ Excluir apenas do banco de dados
   const excluirUsuario = async (id, email) => {
     const confirma = await Swal.fire({
       title: "Excluir usuário?",
@@ -110,7 +107,7 @@ export default function Usuarios() {
   };
 
   const usuariosFiltrados = usuarios.filter((u) =>
-    [u.email, u.cpf, u.bloco, u.apartamento]
+    [u.nome, u.email, u.cpf, u.bloco, u.apartamento]
       .join(" ")
       .toLowerCase()
       .includes(busca.toLowerCase())
@@ -142,11 +139,12 @@ export default function Usuarios() {
           />
         </div>
 
-        {/* 📱 Cards em mobile / tabela em desktop */}
+        {/* 📋 Tabela Desktop */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full border-collapse text-sm text-gray-700">
             <thead>
               <tr className="bg-indigo-100 text-gray-700">
+                <th className="p-3 text-left">Nome</th>
                 <th className="p-3 text-left">E-mail</th>
                 <th className="p-3 text-left">CPF</th>
                 <th className="p-3 text-left">Bloco</th>
@@ -161,8 +159,9 @@ export default function Usuarios() {
                 usuariosFiltrados.map((u) => (
                   <tr
                     key={u.id}
-                    className="border-b hover:bg-indigo-50 transition"
+                    className="border-b hover:bg-indigo-50 transition whitespace-nowrap"
                   >
+                    <td className="p-3">{u.nome || "-"}</td>
                     <td className="p-3">{u.email}</td>
                     <td className="p-3">{u.cpf || "-"}</td>
                     <td className="p-3">{u.bloco || "-"}</td>
@@ -171,36 +170,36 @@ export default function Usuarios() {
                       {u.ativo ? (
                         <span className="text-green-600 font-medium">Ativo</span>
                       ) : (
-                        <span className="text-red-600 font-medium">
-                          Pendente
-                        </span>
+                        <span className="text-red-600 font-medium">Pendente</span>
                       )}
                     </td>
                     <td className="p-3 text-center capitalize">
                       {u.role || "morador"}
                     </td>
-                    <td className="p-3 text-center space-x-2">
-                      {!u.ativo && (
+                    <td className="p-3 text-center">
+                      <div className="flex justify-center items-center gap-2">
+                        {!u.ativo && (
+                          <Button
+                            onClick={() => aprovarUsuario(u.id, u.email)}
+                            variant="secondary"
+                          >
+                            Aprovar
+                          </Button>
+                        )}
                         <Button
-                          onClick={() => aprovarUsuario(u.id, u.email)}
-                          variant="secondary"
+                          onClick={() => excluirUsuario(u.id, u.email)}
+                          variant="danger"
                         >
-                          Aprovar
+                          Excluir
                         </Button>
-                      )}
-                      <Button
-                        onClick={() => excluirUsuario(u.id, u.email)}
-                        variant="danger"
-                      >
-                        Excluir
-                      </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td
-                    colSpan="7"
+                    colSpan="8"
                     className="text-center py-6 text-gray-500 font-medium"
                   >
                     Nenhum usuário encontrado.
@@ -211,7 +210,7 @@ export default function Usuarios() {
           </table>
         </div>
 
-        {/* Mobile Cards */}
+        {/* 📱 Mobile Cards */}
         <div className="md:hidden space-y-4">
           {usuariosFiltrados.length > 0 ? (
             usuariosFiltrados.map((u) => (
@@ -220,8 +219,9 @@ export default function Usuarios() {
                 className="bg-white/70 backdrop-blur-md border border-white/30 shadow-md rounded-xl p-4"
               >
                 <p className="text-gray-800 font-semibold text-sm break-all">
-                  {u.email}
+                  {u.nome || "-"}
                 </p>
+                <p className="text-gray-600 text-xs">{u.email}</p>
                 <p className="text-gray-600 text-sm mt-1">CPF: {u.cpf || "-"}</p>
                 <p className="text-gray-600 text-sm">
                   Bloco: {u.bloco || "-"} | Apt: {u.apartamento || "-"}
