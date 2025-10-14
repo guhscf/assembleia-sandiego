@@ -31,7 +31,6 @@ export default function Cadastro() {
         return;
       }
 
-      // Verifica duplicidade de e-mail e CPF
       const { data: emailExistente } = await supabase
         .from("usuarios")
         .select("id")
@@ -56,7 +55,6 @@ export default function Cadastro() {
         return;
       }
 
-      // Cria usuário no Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password: senha,
@@ -66,11 +64,10 @@ export default function Cadastro() {
       const userId = authData.user?.id;
       if (!userId) throw new Error("Erro ao criar usuário no Auth.");
 
-      // Insere na tabela usuarios
       const { error: insertError } = await supabase.from("usuarios").insert([
         {
           id: userId,
-          nome, // 👈 novo campo
+          nome,
           email,
           cpf,
           bloco,
@@ -105,6 +102,19 @@ export default function Cadastro() {
       setLoading(false);
     }
   };
+
+  // Gera os apartamentos conforme o padrão definido (101–408)
+  const getApartamentosPorBloco = () => {
+    const apartamentos = [];
+    for (let andar = 1; andar <= 4; andar++) {
+      for (let num = 1; num <= 8; num++) {
+        apartamentos.push(`${andar}0${num}`);
+      }
+    }
+    return apartamentos;
+  };
+
+  const apartamentosDisponiveis = getApartamentosPorBloco();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 px-4">
@@ -142,22 +152,44 @@ export default function Cadastro() {
             className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
             required
           />
-          <input
-            type="text"
-            placeholder="Bloco"
+
+          {/* Campo de Bloco */}
+          <select
             value={bloco}
-            onChange={(e) => setBloco(e.target.value)}
-            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            onChange={(e) => {
+              setBloco(e.target.value);
+              setApartamento("");
+            }}
+            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 text-sm sm:text-base"
             required
-          />
-          <input
-            type="text"
-            placeholder="Apartamento"
+          >
+            <option value="">Selecione o bloco</option>
+            <option value="1">Bloco 1</option>
+            <option value="2">Bloco 2</option>
+            <option value="3">Bloco 3</option>
+            <option value="4">Bloco 4</option>
+          </select>
+
+          {/* Campo de Apartamento */}
+          <select
             value={apartamento}
             onChange={(e) => setApartamento(e.target.value)}
-            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            disabled={!bloco}
+            className={`w-full p-3 sm:p-4 rounded-xl border border-gray-300 ${
+              !bloco ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""
+            } focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 text-sm sm:text-base`}
             required
-          />
+          >
+            <option value="">
+              {bloco ? "Selecione o apartamento" : "Selecione o bloco primeiro"}
+            </option>
+            {apartamentosDisponiveis.map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
+
           <input
             type="password"
             placeholder="Senha"
@@ -202,7 +234,6 @@ export default function Cadastro() {
   );
 }
 
-// 🧮 Máscara de CPF
 function formatarCPF(valor) {
   return valor
     .replace(/\D/g, "")

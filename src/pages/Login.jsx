@@ -22,7 +22,6 @@ export default function Login() {
 
       const user = data.user;
 
-      // 🔍 Busca o perfil no banco
       const { data: usuario, error: erroDb } = await supabase
         .from("usuarios")
         .select("*")
