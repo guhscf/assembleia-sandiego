@@ -43,13 +43,22 @@ export default function Login() {
         return;
       }
 
+      // AJUSTE AQUI: Adicionado o redirecionamento após o sucesso
       Swal.fire({
         title: "Sucesso",
         text: `Bem-vindo(a), ${usuario.nome || "Usuário"}!`,
         icon: "success",
         timer: 2000,
         showConfirmButton: false,
+      }).then(() => {
+        // Verifica o cargo para decidir a rota
+        if (usuario.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/"); // Altere para a rota de votação ou home dos moradores se necessário
+        }
       });
+      
     } catch (error) {
       console.error(error);
       Swal.fire("Erro ao entrar", "E-mail ou senha incorretos.", "error");
