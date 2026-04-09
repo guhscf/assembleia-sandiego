@@ -43,7 +43,6 @@ export default function Login() {
         return;
       }
 
-      // AJUSTE AQUI: Adicionado o redirecionamento após o sucesso
       Swal.fire({
         title: "Sucesso",
         text: `Bem-vindo(a), ${usuario.nome || "Usuário"}!`,
@@ -51,11 +50,10 @@ export default function Login() {
         timer: 2000,
         showConfirmButton: false,
       }).then(() => {
-        // Verifica o cargo para decidir a rota
         if (usuario.role === "admin") {
           navigate("/admin");
         } else {
-          navigate("/"); // Altere para a rota de votação ou home dos moradores se necessário
+          navigate("/"); 
         }
       });
       
@@ -124,6 +122,18 @@ export default function Login() {
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
+
+        <div className="mt-8 pt-6 border-t border-gray-200/50 text-center">
+          <button 
+            onClick={() => window.location.href = "/app/index.html"}
+            className="text-gray-500 hover:text-indigo-600 text-sm flex items-center justify-center gap-2 mx-auto transition-colors font-medium"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            Prefere usar o App? Baixe aqui
+          </button>
+        </div>
       </div>
     </div>
   );
