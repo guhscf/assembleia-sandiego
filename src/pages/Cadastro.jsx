@@ -25,8 +25,26 @@ export default function Cadastro() {
         return;
       }
 
+      if (senha.length < 8) {
+        Swal.fire("Senha fraca", "A senha deve ter pelo menos 8 caracteres.", "warning");
+        setLoading(false);
+        return;
+      }
+
+      if (!/[0-9]/.test(senha) && !/[^a-zA-Z0-9]/.test(senha)) {
+        Swal.fire("Senha fraca", "A senha deve conter pelo menos um número ou caractere especial.", "warning");
+        setLoading(false);
+        return;
+      }
+
       if (senha !== confirmarSenha) {
         Swal.fire("Erro", "As senhas não conferem.", "error");
+        setLoading(false);
+        return;
+      }
+
+      if (!validarCPF(cpf)) {
+        Swal.fire("CPF inválido", "Informe um CPF válido.", "warning");
         setLoading(false);
         return;
       }
@@ -91,13 +109,8 @@ export default function Cadastro() {
       }).then(() => {
         navigate("/");
       });
-    } catch (error) {
-      console.error("Erro ao cadastrar:", error);
-      Swal.fire(
-        "Erro",
-        error.message || "Não foi possível realizar o cadastro.",
-        "error"
-      );
+    } catch {
+      Swal.fire("Erro", "Não foi possível realizar o cadastro. Tente novamente.", "error");
     } finally {
       setLoading(false);
     }
@@ -240,4 +253,22 @@ function formatarCPF(valor) {
     .replace(/(\d{3})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
+function validarCPF(cpf) {
+  const nums = cpf.replace(/\D/g, "");
+  if (nums.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(nums)) return false; // ex: 111.111.111-11
+
+  let soma = 0;
+  for (let i = 0; i < 9; i++) soma += parseInt(nums[i]) * (10 - i);
+  let digito1 = (soma * 10) % 11;
+  if (digito1 === 10 || digito1 === 11) digito1 = 0;
+  if (digito1 !== parseInt(nums[9])) return false;
+
+  soma = 0;
+  for (let i = 0; i < 10; i++) soma += parseInt(nums[i]) * (11 - i);
+  let digito2 = (soma * 10) % 11;
+  if (digito2 === 10 || digito2 === 11) digito2 = 0;
+  return digito2 === parseInt(nums[10]);
 }

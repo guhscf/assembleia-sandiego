@@ -9,21 +9,21 @@ export default function AdminDashboard() {
       title: "Gerenciar Usuários",
       description: "Veja usuários pendentes, aprove ou remova cadastros.",
       color: "bg-blue-100",
-      icon: "👥",
+      icon: "🪪",
       action: () => navigate("/usuarios"),
     },
     {
       title: "Nova Assembleia",
       description: "Crie uma nova assembleia, defina pautas e opções de voto.",
-      color: "bg-blue-100", // 🔹 Cor ajustada para igualar aos outros cards
-      icon: "📝",
+      color: "bg-blue-100",
+      icon: "🗳️",
       action: () => navigate("/nova-assembleia"),
     },
     {
       title: "Gerenciar Assembleias",
       description: "Ative, desative ou visualize a participação das assembleias.",
       color: "bg-blue-100",
-      icon: "📋",
+      icon: "⚙️",
       action: () => navigate("/gerenciar-assembleias"),
     },
     {
@@ -32,6 +32,27 @@ export default function AdminDashboard() {
       color: "bg-blue-100",
       icon: "📊",
       action: () => navigate("/resultados"),
+    },
+    {
+      title: "Gerenciar Reservas",
+      description: "Aprove ou recuse solicitações de reserva do salão de festas.",
+      color: "bg-blue-100",
+      icon: "📅",
+      action: () => navigate("/gerenciar-reservas"),
+    },
+    {
+      title: "Gerenciar Avisos",
+      description: "Crie e gerencie comunicados exibidos para os moradores.",
+      color: "bg-blue-100",
+      icon: "🔔",
+      action: () => navigate("/gerenciar-avisos"),
+    },
+    {
+      title: "Portal do Morador",
+      description: "Visualize a tela inicial dos moradores do condomínio.",
+      color: "bg-blue-100",
+      icon: "🏠",
+      action: () => navigate("/home"),
     },
   ];
 

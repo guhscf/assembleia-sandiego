@@ -1,10 +1,28 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../supabase.js";
+
+const TITULOS = {
+  "/home":          "SanDiego",
+  "/evento":        "Assembleia",
+  "/votacao":       "Assembleia",
+  "/salao":         "Reserva",
+  "/mural":         "Avisos",
+  "/ocorrencias":   "Ocorrencias",
+  "/admin":         "SanDiego",
+  "/nova-assembleia":        "Assembleia",
+  "/gerenciar-assembleias":  "Assembleia",
+  "/usuarios":      "SanDiego",
+  "/resultados":      "SanDiego",
+  "/gerenciar-reservas": "Reservas",
+};
 
 export default function Navbar({ mostrarVoltar = false }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuAberto, setMenuAberto] = useState(false);
+
+  const titulo = TITULOS[location.pathname] ?? "SanDiego";
 
   const handleLogout = async () => {
     try {
@@ -19,14 +37,14 @@ export default function Navbar({ mostrarVoltar = false }) {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white/30 backdrop-blur-md border-b border-white/40 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo / Título */}
           <div
             className="text-2xl sm:text-3xl font-bold text-gray-800 cursor-pointer select-none"
-            onClick={() => navigate("/admin-dashboard")}
+            onClick={() => navigate("/")}
           >
-            Assembleia<span className="text-indigo-500">+</span>
+            {titulo}<span className="text-indigo-500">+</span>
           </div>
 
           {/* Botão de menu mobile */}

@@ -4,6 +4,7 @@ import { supabase } from "./supabase";
 
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
+import Home from "./pages/Home";
 import EventoAccess from "./pages/EventoAccess";
 import Votacao from "./pages/Votacao";
 import NovaAssembleia from "./pages/NovaAssembleia";
@@ -12,6 +13,10 @@ import Usuarios from "./pages/Usuarios";
 import Resultados from "./pages/Resultados";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import GerenciarAssembleias from "./pages/GerenciarAssembleias";
+import ReservarSalao from "./pages/ReservarSalao";
+import GerenciarReservas from "./pages/GerenciarReservas";
+import GerenciarAvisos from "./pages/GerenciarAvisos";
+import MuralAvisos from "./pages/MuralAvisos";
 
 export default function App() {
   const [usuario, setUsuario] = useState(null);
@@ -79,7 +84,7 @@ export default function App() {
 
       if (!jaNaRota) {
         if (perfil === "admin") navigate("/admin", { replace: true });
-        if (perfil === "morador") navigate("/evento", { replace: true });
+        if (perfil === "morador") navigate("/home", { replace: true });
       }
     }
   }, [usuario, perfil, carregando, navigate, location.pathname]);
@@ -103,7 +108,15 @@ export default function App() {
               element={!usuario ? <Cadastro /> : <Navigate to="/" />}
             />
             <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+            <Route
+              path="/home"
+              element={usuario ? <Home /> : <Navigate to="/" />}
+            />
             <Route path="/evento" element={<EventoAccess />} />
+            <Route
+              path="/salao"
+              element={usuario ? <ReservarSalao /> : <Navigate to="/" />}
+            />
 
             <Route
               path="/votacao"
@@ -128,6 +141,18 @@ export default function App() {
             <Route
               path="/gerenciar-assembleias"
               element={usuario && perfil === "admin" ? <GerenciarAssembleias /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/gerenciar-reservas"
+              element={usuario && perfil === "admin" ? <GerenciarReservas /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/gerenciar-avisos"
+              element={usuario && perfil === "admin" ? <GerenciarAvisos /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/mural"
+              element={usuario ? <MuralAvisos /> : <Navigate to="/" />}
             />
           </Routes>
         </main>
