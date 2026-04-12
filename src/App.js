@@ -75,7 +75,7 @@ export default function App() {
       if (perfil === "admin") navigate("/admin", { replace: true });
       if (perfil === "morador") navigate("/evento", { replace: true });
     }
-  }, [usuario, perfil, carregando]);
+  }, [usuario, perfil, carregando, navigate]);
 
   if (carregando) {
     return (
