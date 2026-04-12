@@ -36,13 +36,15 @@ export default function NovaAssembleia() {
     try {
       setLoading(true);
 
+      const dataUTC = new Date(data).toISOString();
+
       const { error } = await supabase.from("assembleias").insert({
         id_assembleia: idAssembleia,
         titulo,
         descricao,
-        data,
+        data: dataUTC,
         senha_acesso: senha,
-        ativa: true,
+        ativa: false,
         opcoes,
         criado_em: new Date().toISOString(),
       });
@@ -66,7 +68,6 @@ export default function NovaAssembleia() {
       setSenha("");
       setOpcoes(["Sim", "Não", "Abstenção"]);
     } catch (error) {
-      console.error(error);
       Swal.fire({
         title: "Erro ao criar assembleia",
         text: "Verifique as informações e tente novamente.",
@@ -97,7 +98,6 @@ export default function NovaAssembleia() {
               required
               className="p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none"
             />
-
             <input
               type="password"
               placeholder="Senha de acesso"

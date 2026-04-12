@@ -24,12 +24,13 @@ export default function Login() {
 
       const { data: usuario, error: erroDb } = await supabase
         .from("usuarios")
-        .select("*")
+        .select("id, nome, role, ativo")
         .eq("id", user.id)
         .single();
 
       if (erroDb || !usuario) {
         Swal.fire("Erro", "Usuário não encontrado.", "error");
+        await supabase.auth.signOut();
         return;
       }
 
@@ -49,16 +50,9 @@ export default function Login() {
         icon: "success",
         timer: 2000,
         showConfirmButton: false,
-      }).then(() => {
-        if (usuario.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/"); 
-        }
       });
-      
+
     } catch (error) {
-      console.error(error);
       Swal.fire("Erro ao entrar", "E-mail ou senha incorretos.", "error");
     } finally {
       setLoading(false);
@@ -124,7 +118,7 @@ export default function Login() {
         </form>
 
         <div className="mt-8 pt-6 border-t border-gray-200/50 text-center">
-          <button 
+          <button
             onClick={() => window.location.href = "/app/index.html"}
             className="text-gray-500 hover:text-indigo-600 text-sm flex items-center justify-center gap-2 mx-auto transition-colors font-medium"
           >

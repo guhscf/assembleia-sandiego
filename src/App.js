@@ -2,7 +2,6 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 
-// Páginas
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import EventoAccess from "./pages/EventoAccess";
@@ -18,14 +17,10 @@ export default function App() {
   const [usuario, setUsuario] = useState(null);
   const [perfil, setPerfil] = useState(null);
   const [carregando, setCarregando] = useState(true);
-  const [redirecionado, setRedirecionado] = useState(false);
   const navigate = useNavigate();
 
-  // 🔍 Verifica a sessão do usuário
   const verificarSessao = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
       const { data: dadosUsuario, error } = await supabase
@@ -37,6 +32,7 @@ export default function App() {
       if (error || !dadosUsuario) {
         setUsuario(null);
         setPerfil(null);
+        setCarregando(false);
         return;
       }
 
@@ -59,21 +55,27 @@ export default function App() {
   useEffect(() => {
     verificarSessao();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(() => {
-      verificarSessao();
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
+        setUsuario(null);
+        setPerfil(null);
+        setCarregando(false);
+      } else if (event === "SIGNED_IN") {
+        verificarSessao();
+      }
     });
 
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // 🚀 Redireciona automaticamente após login (sem reload)
   useEffect(() => {
-    if (!carregando && usuario && perfil && !redirecionado) {
+    if (carregando) return;
+
+    if (usuario && perfil) {
       if (perfil === "admin") navigate("/admin", { replace: true });
       if (perfil === "morador") navigate("/evento", { replace: true });
-      setRedirecionado(true);
     }
-  }, [usuario, perfil, carregando, navigate, redirecionado]);
+  }, [usuario, perfil, carregando]);
 
   if (carregando) {
     return (
@@ -88,7 +90,6 @@ export default function App() {
       <div className="flex flex-col min-h-screen px-2 sm:px-4 md:px-6 lg:px-8">
         <main className="flex-grow w-full">
           <Routes>
-            {/* Páginas públicas */}
             <Route path="/" element={<Login />} />
             <Route
               path="/cadastro"
@@ -97,71 +98,29 @@ export default function App() {
             <Route path="/recuperar-senha" element={<RecuperarSenha />} />
             <Route path="/evento" element={<EventoAccess />} />
 
-            {/* Páginas restritas */}
             <Route
               path="/votacao"
-              element={
-                usuario && perfil === "morador" ? (
-                  <Votacao />
-                ) : (
-                  <Navigate to="/" />
-                )
-              }
+              element={usuario && perfil === "morador" ? <Votacao /> : <Navigate to="/" />}
             />
-
             <Route
               path="/admin"
-              element={
-                usuario && perfil === "admin" ? (
-                  <AdminDashboard />
-                ) : (
-                  <Navigate to="/" />
-                )
-              }
+              element={usuario && perfil === "admin" ? <AdminDashboard /> : <Navigate to="/" />}
             />
-
             <Route
               path="/nova-assembleia"
-              element={
-                usuario && perfil === "admin" ? (
-                  <NovaAssembleia />
-                ) : (
-                  <Navigate to="/" />
-                )
-              }
+              element={usuario && perfil === "admin" ? <NovaAssembleia /> : <Navigate to="/" />}
             />
-
             <Route
               path="/usuarios"
-              element={
-                usuario && perfil === "admin" ? (
-                  <Usuarios />
-                ) : (
-                  <Navigate to="/" />
-                )
-              }
+              element={usuario && perfil === "admin" ? <Usuarios /> : <Navigate to="/" />}
             />
-
             <Route
               path="/resultados"
-              element={
-                usuario && perfil === "admin" ? (
-                  <Resultados />
-                ) : (
-                  <Navigate to="/" />
-                )
-              }
+              element={usuario && perfil === "admin" ? <Resultados /> : <Navigate to="/" />}
             />
-
             <Route
               path="/gerenciar-assembleias"
-              element={
-                usuario && perfil === "admin" ? (
-                  <GerenciarAssembleias />
-                ) : (
-                  <Navigate to="/" />
-                )
-              }
+              element={usuario && perfil === "admin" ? <GerenciarAssembleias /> : <Navigate to="/" />}
             />
           </Routes>
         </main>
