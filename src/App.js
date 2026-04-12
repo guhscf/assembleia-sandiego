@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 
@@ -18,6 +18,7 @@ export default function App() {
   const [perfil, setPerfil] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const verificarSessao = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -72,10 +73,16 @@ export default function App() {
     if (carregando) return;
 
     if (usuario && perfil) {
-      if (perfil === "admin") navigate("/admin", { replace: true });
-      if (perfil === "morador") navigate("/evento", { replace: true });
+      const jaNaRota =
+        (perfil === "admin" && location.pathname !== "/") ||
+        (perfil === "morador" && location.pathname !== "/");
+
+      if (!jaNaRota) {
+        if (perfil === "admin") navigate("/admin", { replace: true });
+        if (perfil === "morador") navigate("/evento", { replace: true });
+      }
     }
-  }, [usuario, perfil, carregando, navigate]);
+  }, [usuario, perfil, carregando, navigate, location.pathname]);
 
   if (carregando) {
     return (
