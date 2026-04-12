@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { supabase } from "./supabase";
+import { supabase } from "../supabase";
 
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
