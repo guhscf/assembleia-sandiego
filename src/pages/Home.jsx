@@ -8,40 +8,40 @@ const modulos = [
     descricao: "Participe das assembleias e vote nas pautas do condomínio.",
     Icone: Building2,
     rota: "/evento",
-    iconeBg: "bg-indigo-100",
-    iconeColor: "text-indigo-600",
-    borderColor: "border-indigo-100",
-    hoverClasses: "hover:border-indigo-300 hover:shadow-indigo-100/60",
+    iconeBg: "bg-indigo-100 dark:bg-indigo-900/40",
+    iconeColor: "text-indigo-600 dark:text-indigo-400",
+    borderColor: "border-indigo-100 dark:border-indigo-800",
+    hoverClasses: "hover:border-indigo-300 hover:shadow-indigo-100/60 dark:hover:border-indigo-600",
   },
   {
     titulo: "Reservar Salão de Festas",
     descricao: "Agende o salão de festas para eventos e comemorações.",
     Icone: CalendarDays,
     rota: "/salao",
-    iconeBg: "bg-sky-100",
-    iconeColor: "text-sky-600",
-    borderColor: "border-sky-100",
-    hoverClasses: "hover:border-sky-300 hover:shadow-sky-100/60",
+    iconeBg: "bg-sky-100 dark:bg-sky-900/40",
+    iconeColor: "text-sky-600 dark:text-sky-400",
+    borderColor: "border-sky-100 dark:border-sky-800",
+    hoverClasses: "hover:border-sky-300 hover:shadow-sky-100/60 dark:hover:border-sky-600",
   },
   {
     titulo: "Mural de Avisos",
     descricao: "Fique por dentro das novidades e comunicados do condomínio.",
     Icone: Megaphone,
     rota: "/mural",
-    iconeBg: "bg-emerald-100",
-    iconeColor: "text-emerald-600",
-    borderColor: "border-emerald-100",
-    hoverClasses: "hover:border-emerald-300 hover:shadow-emerald-100/60",
+    iconeBg: "bg-emerald-100 dark:bg-emerald-900/40",
+    iconeColor: "text-emerald-600 dark:text-emerald-400",
+    borderColor: "border-emerald-100 dark:border-emerald-800",
+    hoverClasses: "hover:border-emerald-300 hover:shadow-emerald-100/60 dark:hover:border-emerald-600",
   },
   {
     titulo: "Ocorrências",
     descricao: "Registre reclamações ou ocorrências para a administração.",
     Icone: AlertCircle,
     rota: "/ocorrencias",
-    iconeBg: "bg-rose-100",
-    iconeColor: "text-rose-600",
-    borderColor: "border-rose-100",
-    hoverClasses: "hover:border-rose-300 hover:shadow-rose-100/60",
+    iconeBg: "bg-rose-100 dark:bg-rose-900/40",
+    iconeColor: "text-rose-600 dark:text-rose-400",
+    borderColor: "border-rose-100 dark:border-rose-800",
+    hoverClasses: "hover:border-rose-300 hover:shadow-rose-100/60 dark:hover:border-rose-600",
   },
 ];
 
@@ -78,12 +78,12 @@ export default function Home() {
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 leading-tight">
             Residencial{" "}
             <span className="text-indigo-500">San Diego</span>
             <span className="text-indigo-400">.</span>
           </h1>
-          <p className="text-gray-500 mt-2 text-sm sm:text-base">
+          <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm sm:text-base">
             {saudacao}! O que você deseja fazer hoje?
           </p>
         </div>
@@ -107,7 +107,7 @@ export default function Home() {
                 className={`
                   flex flex-col items-start gap-4 p-5 sm:p-6
                   rounded-2xl border ${borderColor}
-                  bg-white/50 backdrop-blur-sm
+                  bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm
                   shadow-md ${hoverClasses}
                   transition-all duration-200 hover:scale-[1.02] hover:shadow-lg
                   text-left w-full
@@ -120,10 +120,10 @@ export default function Home() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-base sm:text-lg font-semibold text-gray-800 leading-snug">
+                  <h2 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 leading-snug">
                     {titulo}
                   </h2>
-                  <p className="text-sm text-gray-500 mt-1 leading-relaxed">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
                     {descricao}
                   </p>
                 </div>

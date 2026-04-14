@@ -20,7 +20,7 @@ export default function RecuperarSenha() {
       setLoading(true);
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + "/",
+        redirectTo: window.location.origin + "/redefinir-senha",
       });
 
       if (error) throw error;
@@ -42,12 +42,12 @@ export default function RecuperarSenha() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 px-4">
-      <div className="w-full max-w-md p-8 sm:p-10 rounded-3xl bg-white/40 backdrop-blur-md shadow-lg border border-white/30">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+      <div className="w-full max-w-md p-8 sm:p-10 rounded-3xl bg-white/40 dark:bg-gray-800/50 backdrop-blur-md shadow-lg border border-white/30 dark:border-gray-700/30">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-center">
           Recuperar senha<span className="text-indigo-500">.</span>
         </h1>
-        <p className="text-center text-gray-600 mb-8 sm:mb-10 text-sm sm:text-base">
+        <p className="text-center text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 text-sm sm:text-base">
           Digite o e-mail cadastrado para redefinir sua senha
         </p>
 
@@ -57,15 +57,15 @@ export default function RecuperarSenha() {
             placeholder="E-mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 dark:border-gray-600 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white/70 dark:bg-gray-700/70 text-sm sm:text-base"
             required
           />
 
-          <div className="flex flex-col sm:flex-row justify-between text-sm text-indigo-600 mt-2 space-y-2 sm:space-y-0">
+          <div className="flex flex-col sm:flex-row justify-between text-sm text-indigo-600 dark:text-indigo-400 mt-2 space-y-2 sm:space-y-0">
             <button
               type="button"
               onClick={() => navigate("/")}
-              className="hover:text-indigo-700 transition"
+              className="hover:text-indigo-700 dark:hover:text-indigo-300 transition"
             >
               Voltar ao login
             </button>

@@ -116,7 +116,6 @@ export default function Cadastro() {
     }
   };
 
-  // Gera os apartamentos conforme o padrão definido (101–408)
   const getApartamentosPorBloco = () => {
     const apartamentos = [];
     for (let andar = 1; andar <= 4; andar++) {
@@ -129,13 +128,15 @@ export default function Cadastro() {
 
   const apartamentosDisponiveis = getApartamentosPorBloco();
 
+  const inputCls = "w-full p-3 sm:p-4 rounded-xl border border-gray-300 dark:border-gray-600 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white/70 dark:bg-gray-700/70 text-sm sm:text-base";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 px-4">
-      <div className="w-full max-w-md p-8 sm:p-10 rounded-3xl bg-white/40 backdrop-blur-md shadow-lg border border-white/30">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+      <div className="w-full max-w-md p-8 sm:p-10 rounded-3xl bg-white/40 dark:bg-gray-800/50 backdrop-blur-md shadow-lg border border-white/30 dark:border-gray-700/30">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-center">
           Crie sua conta<span className="text-indigo-500">.</span>
         </h1>
-        <p className="text-center text-gray-600 mb-8 sm:mb-10 text-sm sm:text-base">
+        <p className="text-center text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 text-sm sm:text-base">
           Preencha seus dados para participar das assembleias
         </p>
 
@@ -145,7 +146,7 @@ export default function Cadastro() {
             placeholder="Nome completo"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            className={inputCls}
             required
           />
           <input
@@ -153,7 +154,7 @@ export default function Cadastro() {
             placeholder="E-mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            className={inputCls}
             required
           />
           <input
@@ -162,18 +163,17 @@ export default function Cadastro() {
             value={cpf}
             onChange={(e) => setCpf(formatarCPF(e.target.value))}
             maxLength="14"
-            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            className={inputCls}
             required
           />
 
-          {/* Campo de Bloco */}
           <select
             value={bloco}
             onChange={(e) => {
               setBloco(e.target.value);
               setApartamento("");
             }}
-            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 text-sm sm:text-base"
+            className={inputCls}
             required
           >
             <option value="">Selecione o bloco</option>
@@ -183,14 +183,11 @@ export default function Cadastro() {
             <option value="4">Bloco 4</option>
           </select>
 
-          {/* Campo de Apartamento */}
           <select
             value={apartamento}
             onChange={(e) => setApartamento(e.target.value)}
             disabled={!bloco}
-            className={`w-full p-3 sm:p-4 rounded-xl border border-gray-300 ${
-              !bloco ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""
-            } focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 text-sm sm:text-base`}
+            className={`${inputCls} ${!bloco ? "opacity-50 cursor-not-allowed" : ""}`}
             required
           >
             <option value="">
@@ -208,7 +205,7 @@ export default function Cadastro() {
             placeholder="Senha"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            className={inputCls}
             required
           />
           <input
@@ -216,15 +213,15 @@ export default function Cadastro() {
             placeholder="Confirmar senha"
             value={confirmarSenha}
             onChange={(e) => setConfirmarSenha(e.target.value)}
-            className="w-full p-3 sm:p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none transition text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+            className={inputCls}
             required
           />
 
-          <div className="flex justify-between text-sm text-indigo-600 mt-2">
+          <div className="flex justify-between text-sm text-indigo-600 dark:text-indigo-400 mt-2">
             <button
               type="button"
               onClick={() => navigate("/")}
-              className="hover:text-indigo-700 transition"
+              className="hover:text-indigo-700 dark:hover:text-indigo-300 transition"
             >
               Já tenho conta
             </button>
@@ -258,7 +255,7 @@ function formatarCPF(valor) {
 function validarCPF(cpf) {
   const nums = cpf.replace(/\D/g, "");
   if (nums.length !== 11) return false;
-  if (/^(\d)\1{10}$/.test(nums)) return false; // ex: 111.111.111-11
+  if (/^(\d)\1{10}$/.test(nums)) return false;
 
   let soma = 0;
   for (let i = 0; i < 9; i++) soma += parseInt(nums[i]) * (10 - i);
