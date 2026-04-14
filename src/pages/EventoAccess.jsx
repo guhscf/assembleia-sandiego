@@ -30,7 +30,6 @@ export default function EventoAccess() {
 
   const buscarAssembleias = async () => {
     setCarregando(true);
-    const agora = new Date().toISOString();
     try {
       const { data, error } = await supabase
         .from("assembleias")

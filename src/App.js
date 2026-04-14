@@ -82,7 +82,7 @@ export default function App() {
     });
 
     return () => listener.subscription.unsubscribe();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (carregando) return;
