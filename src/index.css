@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
 .swal2-popup {
   border-radius: 1rem !important;
   font-family: 'Inter', sans-serif;

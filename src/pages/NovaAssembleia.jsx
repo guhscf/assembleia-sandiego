@@ -3,6 +3,9 @@ import { supabase } from "../supabase.js";
 import Swal from "sweetalert2";
 import Navbar from "../components/Navbar";
 
+const inputCls =
+  "p-4 rounded-xl border border-gray-300 dark:border-gray-600 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white/70 dark:bg-gray-700/70 transition";
+
 export default function NovaAssembleia() {
   const [idAssembleia, setIdAssembleia] = useState("");
   const [titulo, setTitulo] = useState("");
@@ -80,11 +83,11 @@ export default function NovaAssembleia() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
+    <div className="min-h-screen">
       <Navbar mostrarVoltar={true} />
 
-      <div className="max-w-3xl mx-auto bg-white/40 backdrop-blur-md shadow-lg border border-white/30 rounded-3xl p-10 mt-24">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+      <div className="max-w-3xl mx-auto bg-white/40 dark:bg-gray-800/50 backdrop-blur-md shadow-lg border border-white/30 dark:border-gray-700/30 rounded-3xl p-10 mt-24">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">
           Nova Assembleia<span className="text-indigo-500">.</span>
         </h1>
 
@@ -96,7 +99,7 @@ export default function NovaAssembleia() {
               value={idAssembleia}
               onChange={(e) => setIdAssembleia(e.target.value)}
               required
-              className="p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none"
+              className={inputCls}
             />
             <input
               type="password"
@@ -104,7 +107,7 @@ export default function NovaAssembleia() {
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               required
-              className="p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none"
+              className={inputCls}
             />
           </div>
 
@@ -114,7 +117,7 @@ export default function NovaAssembleia() {
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
             required
-            className="p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none"
+            className={inputCls}
           />
 
           <textarea
@@ -123,7 +126,7 @@ export default function NovaAssembleia() {
             onChange={(e) => setDescricao(e.target.value)}
             required
             rows="3"
-            className="p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none resize-none"
+            className={`${inputCls} resize-none`}
           />
 
           <input
@@ -131,11 +134,11 @@ export default function NovaAssembleia() {
             value={data}
             onChange={(e) => setData(e.target.value)}
             required
-            className="p-4 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none"
+            className={inputCls}
           />
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
               Opções de voto
             </label>
             <div className="flex flex-col gap-3">
@@ -145,7 +148,7 @@ export default function NovaAssembleia() {
                     type="text"
                     value={opcao}
                     onChange={(e) => atualizarOpcao(index, e.target.value)}
-                    className="flex-1 p-3 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none"
+                    className={`flex-1 ${inputCls}`}
                   />
                   <button
                     type="button"

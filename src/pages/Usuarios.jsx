@@ -115,17 +115,17 @@ export default function Usuarios() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen text-gray-600">
+      <div className="flex justify-center items-center min-h-screen text-gray-600 dark:text-gray-300 bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         Carregando usuários...
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar mostrarVoltar={true} />
 
-      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl p-6 sm:p-8 mt-20">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">
+      <div className="max-w-6xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6 sm:p-8 mt-20">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">
           Gerenciar Usuários<span className="text-indigo-500">.</span>
         </h1>
 
@@ -135,15 +135,15 @@ export default function Usuarios() {
             placeholder="Buscar usuário..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            className="w-full md:w-1/2 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-200 outline-none"
+            className="w-full md:w-1/2 p-3 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-200 outline-none text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
           />
         </div>
 
-        {/* 📋 Tabela Desktop */}
+        {/* Tabela Desktop */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full border-collapse text-sm text-gray-700">
+          <table className="w-full border-collapse text-sm text-gray-700 dark:text-gray-200">
             <thead>
-              <tr className="bg-indigo-100 text-gray-700">
+              <tr className="bg-indigo-100 dark:bg-indigo-900/50 text-gray-700 dark:text-gray-200">
                 <th className="p-3 text-left">Nome</th>
                 <th className="p-3 text-left">E-mail</th>
                 <th className="p-3 text-left">CPF</th>
@@ -159,7 +159,7 @@ export default function Usuarios() {
                 usuariosFiltrados.map((u) => (
                   <tr
                     key={u.id}
-                    className="border-b hover:bg-indigo-50 transition whitespace-nowrap"
+                    className="border-b dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition whitespace-nowrap"
                   >
                     <td className="p-3">{u.nome || "-"}</td>
                     <td className="p-3">{u.email}</td>
@@ -168,9 +168,9 @@ export default function Usuarios() {
                     <td className="p-3">{u.apartamento || "-"}</td>
                     <td className="p-3 text-center">
                       {u.ativo ? (
-                        <span className="text-green-600 font-medium">Ativo</span>
+                        <span className="text-green-600 dark:text-green-400 font-medium">Ativo</span>
                       ) : (
-                        <span className="text-red-600 font-medium">Pendente</span>
+                        <span className="text-red-600 dark:text-red-400 font-medium">Pendente</span>
                       )}
                     </td>
                     <td className="p-3 text-center capitalize">
@@ -200,7 +200,7 @@ export default function Usuarios() {
                 <tr>
                   <td
                     colSpan="8"
-                    className="text-center py-6 text-gray-500 font-medium"
+                    className="text-center py-6 text-gray-500 dark:text-gray-400 font-medium"
                   >
                     Nenhum usuário encontrado.
                   </td>
@@ -210,28 +210,28 @@ export default function Usuarios() {
           </table>
         </div>
 
-        {/* 📱 Mobile Cards */}
+        {/* Mobile Cards */}
         <div className="md:hidden space-y-4">
           {usuariosFiltrados.length > 0 ? (
             usuariosFiltrados.map((u) => (
               <div
                 key={u.id}
-                className="bg-white/70 backdrop-blur-md border border-white/30 shadow-md rounded-xl p-4"
+                className="bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-white/30 dark:border-gray-600/30 shadow-md rounded-xl p-4"
               >
-                <p className="text-gray-800 font-semibold text-sm break-all">
+                <p className="text-gray-800 dark:text-gray-100 font-semibold text-sm break-all">
                   {u.nome || "-"}
                 </p>
-                <p className="text-gray-600 text-xs">{u.email}</p>
-                <p className="text-gray-600 text-sm mt-1">CPF: {u.cpf || "-"}</p>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 dark:text-gray-300 text-xs">{u.email}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">CPF: {u.cpf || "-"}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Bloco: {u.bloco || "-"} | Apt: {u.apartamento || "-"}
                 </p>
-                <p className="text-gray-700 text-sm mt-1">
+                <p className="text-gray-700 dark:text-gray-200 text-sm mt-1">
                   Status:{" "}
                   {u.ativo ? (
-                    <span className="text-green-600 font-medium">Ativo</span>
+                    <span className="text-green-600 dark:text-green-400 font-medium">Ativo</span>
                   ) : (
-                    <span className="text-red-600 font-medium">Pendente</span>
+                    <span className="text-red-600 dark:text-red-400 font-medium">Pendente</span>
                   )}
                 </p>
                 <div className="flex gap-2 mt-3">
@@ -255,7 +255,7 @@ export default function Usuarios() {
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-500 font-medium">
+            <p className="text-center text-gray-500 dark:text-gray-400 font-medium">
               Nenhum usuário encontrado.
             </p>
           )}
