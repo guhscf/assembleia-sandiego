@@ -15,8 +15,8 @@ const TIPOS_EVENTO = [
 ];
 
 const inputClass =
-  "w-full p-3 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none text-sm text-gray-800 placeholder-gray-400 bg-white/70 transition";
-const labelClass = "block text-xs font-semibold text-gray-500 mb-1";
+  "w-full p-3 rounded-xl border border-gray-300 dark:border-gray-600 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white/70 dark:bg-gray-700/70 transition";
+const labelClass = "block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1";
 
 export default function ReservarSalao() {
   const [mes, setMes] = useState(new Date().getMonth());
@@ -63,9 +63,8 @@ export default function ReservarSalao() {
   const buscarDatasOcupadas = async () => {
     setCarregandoCal(true);
     const { data, error } = await supabase
-      .from("reservas")
-      .select("data_evento, data_montagem, status")
-      .in("status", ["aprovado", "pendente"]);
+      .from("reservas_calendario")
+      .select("data_evento, data_montagem, status");
 
     if (!error && data) {
       const ocupadas = new Set();
@@ -101,12 +100,12 @@ export default function ReservarSalao() {
     if (selecionada)
       return "bg-indigo-500 text-white shadow-md scale-105 hover:bg-indigo-500";
     if (ocupada)
-      return "bg-red-100 text-red-400 line-through cursor-not-allowed hover:bg-red-100";
+      return "bg-red-100 dark:bg-red-900/30 text-red-400 dark:text-red-500 line-through cursor-not-allowed hover:bg-red-100 dark:hover:bg-red-900/30";
     if (passada)
-      return "text-gray-300 cursor-not-allowed";
+      return "text-gray-300 dark:text-gray-600 cursor-not-allowed";
     if (hoje)
-      return "ring-2 ring-indigo-400 text-indigo-600 font-bold hover:bg-indigo-50";
-    return "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer";
+      return "ring-2 ring-indigo-400 text-indigo-600 dark:text-indigo-400 font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/30";
+    return "text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer";
   };
 
   const handleSubmit = async (e) => {
@@ -141,6 +140,35 @@ export default function ReservarSalao() {
       });
 
       if (error) throw error;
+
+      // Notifica todos os admins por email
+      try {
+        const { data: admins } = await supabase
+          .from("usuarios")
+          .select("email")
+          .eq("role", "admin")
+          .eq("ativo", true);
+
+        for (const admin of admins || []) {
+          await supabase.functions.invoke("enviar-email", {
+            body: {
+              para: admin.email,
+              assunto: `📅 Nova reserva solicitada — ${codigoReserva}`,
+              corpo:
+                `Uma nova solicitação de reserva foi recebida.\n\n` +
+                `📋 Código: ${codigoReserva}\n` +
+                `👤 Cliente: ${form.cliente_nome}\n` +
+                `📅 Data do evento: ${new Date(dataSelecionada + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}\n` +
+                `🎉 Tipo: ${form.tipo_evento}\n` +
+                `👥 Convidados: ${form.num_convidados}\n` +
+                `🕐 Horário: ${form.horario_inicio} às ${form.horario_fim}\n\n` +
+                `Acesse o painel administrativo para aprovar ou cancelar.`,
+            },
+          });
+        }
+      } catch (emailErr) {
+        console.warn("Email ao admin não enviado:", emailErr);
+      }
 
       await Swal.fire({
         title: "Reserva enviada!",
@@ -178,31 +206,31 @@ export default function ReservarSalao() {
       <main className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         {/* Cabeçalho */}
         <div className="mt-8 mb-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
             Reservar Salão<span className="text-indigo-500">.</span>
           </h1>
-          <p className="text-gray-500 mt-2 text-sm sm:text-base">
+          <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm sm:text-base">
             Selecione uma data disponível e preencha os dados do evento.
           </p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* ── Calendário ── */}
-          <div className="w-full lg:w-auto lg:min-w-[340px] bg-white/50 backdrop-blur-sm rounded-2xl border border-white/30 shadow-md p-5 sm:p-6">
+          <div className="w-full lg:w-auto lg:min-w-[340px] bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/30 dark:border-gray-700/30 shadow-md p-5 sm:p-6">
             {/* Navegação de mês */}
             <div className="flex items-center justify-between mb-5">
               <button
                 onClick={() => navegarMes(-1)}
-                className="p-2 rounded-xl hover:bg-gray-100 transition text-gray-600"
+                className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-300"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <h2 className="text-base font-bold text-gray-800">
+              <h2 className="text-base font-bold text-gray-800 dark:text-gray-100">
                 {MESES[mes]} {ano}
               </h2>
               <button
                 onClick={() => navegarMes(1)}
-                className="p-2 rounded-xl hover:bg-gray-100 transition text-gray-600"
+                className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-300"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -211,7 +239,7 @@ export default function ReservarSalao() {
             {/* Cabeçalho dias da semana */}
             <div className="grid grid-cols-7 mb-1">
               {DIAS_SEMANA.map((d) => (
-                <div key={d} className="text-center text-xs font-semibold text-gray-400 py-1">
+                <div key={d} className="text-center text-xs font-semibold text-gray-400 dark:text-gray-500 py-1">
                   {d}
                 </div>
               ))}
@@ -252,13 +280,13 @@ export default function ReservarSalao() {
             )}
 
             {/* Legenda */}
-            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-5 pt-4 border-t border-gray-100 text-xs text-gray-500">
+            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-5 pt-4 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
               <span className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded-full bg-indigo-500 inline-block" />
                 Selecionada
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-red-200 inline-block" />
+                <span className="w-3 h-3 rounded-full bg-red-200 dark:bg-red-800 inline-block" />
                 Indisponível
               </span>
               <span className="flex items-center gap-1.5">
@@ -266,7 +294,7 @@ export default function ReservarSalao() {
                 Hoje
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-gray-200 inline-block" />
+                <span className="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-600 inline-block" />
                 Passada
               </span>
             </div>
@@ -274,11 +302,11 @@ export default function ReservarSalao() {
 
           {/* ── Formulário ── */}
           {dataSelecionada ? (
-            <div className="flex-1 w-full bg-white/50 backdrop-blur-sm rounded-2xl border border-white/30 shadow-md p-5 sm:p-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-0.5">
+            <div className="flex-1 w-full bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/30 dark:border-gray-700/30 shadow-md p-5 sm:p-6">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-0.5">
                 Dados da reserva
               </h3>
-              <p className="text-sm text-gray-500 mb-5 capitalize">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-5 capitalize">
                 📅 {dataFormatada}
               </p>
 
@@ -391,7 +419,7 @@ export default function ReservarSalao() {
                     onChange={(e) => setForm({ ...form, data_montagem: e.target.value })}
                     className={inputClass}
                   />
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                     Dia anterior ao evento para montagem/decoração.
                   </p>
                 </div>
@@ -422,7 +450,7 @@ export default function ReservarSalao() {
                   <button
                     type="button"
                     onClick={() => setDataSelecionada(null)}
-                    className="px-5 py-3 rounded-xl border border-gray-300 text-gray-500 text-sm font-semibold hover:bg-gray-50 transition"
+                    className="px-5 py-3 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >
                     Cancelar
                   </button>
@@ -442,10 +470,10 @@ export default function ReservarSalao() {
             </div>
           ) : (
             /* Placeholder desktop quando nenhuma data selecionada */
-            <div className="hidden lg:flex flex-1 items-center justify-center bg-white/30 backdrop-blur-sm rounded-2xl border border-dashed border-indigo-200 p-10">
-              <div className="text-center text-gray-400">
-                <CalendarDays className="w-12 h-12 mx-auto mb-3 text-indigo-200" />
-                <p className="font-medium text-gray-500">Selecione uma data</p>
+            <div className="hidden lg:flex flex-1 items-center justify-center bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm rounded-2xl border border-dashed border-indigo-200 dark:border-indigo-700 p-10">
+              <div className="text-center text-gray-400 dark:text-gray-500">
+                <CalendarDays className="w-12 h-12 mx-auto mb-3 text-indigo-200 dark:text-indigo-700" />
+                <p className="font-medium text-gray-500 dark:text-gray-400">Selecione uma data</p>
                 <p className="text-sm mt-1">O formulário aparecerá aqui.</p>
               </div>
             </div>

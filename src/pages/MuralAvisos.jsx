@@ -10,8 +10,8 @@ const CATEGORIAS = [
 ];
 
 const CATEGORIA_CFG = {
-  informativo: { color: "bg-blue-100 text-blue-700",   dot: "bg-blue-500"  },
-  urgente:     { color: "bg-red-100 text-red-700",     dot: "bg-red-500 animate-pulse" },
+  informativo: { color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",   dot: "bg-blue-500"  },
+  urgente:     { color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",       dot: "bg-red-500 animate-pulse" },
 };
 
 function Badge({ categoria }) {
@@ -70,11 +70,18 @@ export default function MuralAvisos() {
     const buscarAvisos = async () => {
       const hoje = new Date().toISOString().split("T")[0];
 
+      // Desativa avisos com data_expiracao vencida
+      await supabase
+        .from("avisos")
+        .update({ ativo: false })
+        .eq("ativo", true)
+        .not("data_expiracao", "is", null)
+        .lt("data_expiracao", hoje);
+
       const { data, error } = await supabase
         .from("avisos")
         .select("id, titulo, conteudo, categoria, fixado, data_inicio, data_expiracao, created_at")
         .eq("ativo", true)
-        .or(`data_expiracao.is.null,data_expiracao.gte.${hoje}`)
         .order("fixado", { ascending: false })
         .order("created_at", { ascending: false });
 
@@ -119,10 +126,10 @@ export default function MuralAvisos() {
               <span className="text-2xl">📢</span>
             </div>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
             Mural de Avisos<span className="text-emerald-500">.</span>
           </h1>
-          <p className="text-gray-500 mt-2 text-sm sm:text-base">
+          <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm sm:text-base">
             Fique por dentro dos comunicados do condomínio.
           </p>
         </div>
@@ -135,12 +142,12 @@ export default function MuralAvisos() {
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar por título ou conteúdo..."
-            className="w-full pl-11 pr-10 py-3.5 rounded-2xl border border-white/40 bg-white/60 backdrop-blur-sm shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none text-sm text-gray-800 placeholder:text-gray-400 transition"
+            className="w-full pl-11 pr-10 py-3.5 rounded-2xl border border-white/40 dark:border-gray-600 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 transition"
           />
           {busca && (
             <button
               onClick={() => setBusca("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-100 text-gray-400 transition"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 transition"
             >
               <X className="w-4 h-4" />
             </button>
@@ -158,7 +165,7 @@ export default function MuralAvisos() {
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
                   categoria === c.value
                     ? "bg-emerald-500 text-white shadow-sm scale-[1.03]"
-                    : "bg-white/50 text-gray-500 hover:bg-white/80 border border-gray-200"
+                    : "bg-white/50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-700/80 border border-gray-200 dark:border-gray-600"
                 }`}
               >
                 {c.value !== "todos" && (
@@ -175,7 +182,7 @@ export default function MuralAvisos() {
           <select
             value={periodo}
             onChange={(e) => setPeriodo(e.target.value)}
-            className="sm:ml-auto px-3.5 py-2 rounded-xl border border-gray-200 bg-white/50 text-xs font-semibold text-gray-600 outline-none focus:border-emerald-400 transition cursor-pointer"
+            className="sm:ml-auto px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50 text-xs font-semibold text-gray-600 dark:text-gray-300 outline-none focus:border-emerald-400 transition cursor-pointer"
           >
             {PERIODOS.map((p) => (
               <option key={p.value} value={p.value}>{p.label}</option>
@@ -186,12 +193,12 @@ export default function MuralAvisos() {
         {/* Limpar filtros */}
         {temFiltro && (
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               {filtrados.length} resultado{filtrados.length !== 1 ? "s" : ""}
             </p>
             <button
               onClick={limparFiltros}
-              className="text-xs text-emerald-600 font-semibold hover:underline flex items-center gap-1"
+              className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1"
             >
               <X className="w-3 h-3" /> Limpar filtros
             </button>
@@ -209,11 +216,11 @@ export default function MuralAvisos() {
         {!carregando && filtrados.length === 0 && (
           <div className="text-center py-20">
             <div className="text-5xl mb-4">{temFiltro ? "🔍" : "📭"}</div>
-            <p className="text-lg font-medium text-gray-500">
+            <p className="text-lg font-medium text-gray-500 dark:text-gray-400">
               {temFiltro ? "Nenhum aviso encontrado" : "Nenhum aviso disponível"}
             </p>
             {temFiltro && (
-              <button onClick={limparFiltros} className="mt-3 text-sm text-emerald-600 font-semibold hover:underline">
+              <button onClick={limparFiltros} className="mt-3 text-sm text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
                 Limpar filtros
               </button>
             )}
@@ -227,7 +234,7 @@ export default function MuralAvisos() {
               <button
                 key={aviso.id}
                 onClick={() => setAberto(aviso)}
-                className="bg-white/50 backdrop-blur-sm rounded-2xl border border-white/30 shadow-md p-4 sm:p-5 flex items-start gap-3 text-left w-full hover:shadow-lg hover:scale-[1.01] transition-all duration-200 group"
+                className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/30 dark:border-gray-700/30 shadow-md p-4 sm:p-5 flex items-start gap-3 text-left w-full hover:shadow-lg hover:scale-[1.01] transition-all duration-200 group"
               >
                 {/* Linha colorida lateral */}
                 <div className={`w-1 self-stretch rounded-full shrink-0 ${
@@ -238,22 +245,22 @@ export default function MuralAvisos() {
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
                     <Badge categoria={aviso.categoria} />
                     {aviso.fixado && (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-500">
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/40 text-indigo-500 dark:text-indigo-400">
                         <Pin className="w-3 h-3" /> Fixado
                       </span>
                     )}
                   </div>
 
-                  <p className="font-semibold text-gray-800 leading-snug">{aviso.titulo}</p>
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2 leading-relaxed">{aviso.conteudo}</p>
+                  <p className="font-semibold text-gray-800 dark:text-gray-100 leading-snug">{aviso.titulo}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 leading-relaxed">{aviso.conteudo}</p>
 
-                  <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-400">
+                  <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-400 dark:text-gray-500">
                     <Calendar className="w-3 h-3" />
                     {formatarData(aviso.created_at)}
                   </div>
                 </div>
 
-                <ChevronRight className="w-4 h-4 text-gray-300 shrink-0 self-center group-hover:text-emerald-400 transition mt-1" />
+                <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0 self-center group-hover:text-emerald-400 transition mt-1" />
               </button>
             ))}
           </div>
@@ -266,23 +273,23 @@ export default function MuralAvisos() {
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) setAberto(null); }}
         >
-          <div className="bg-white w-full sm:rounded-3xl sm:max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl rounded-t-3xl">
+          <div className="bg-white dark:bg-gray-800 w-full sm:rounded-3xl sm:max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl rounded-t-3xl">
             {/* Header */}
-            <div className="flex items-start justify-between p-5 sm:p-6 border-b border-gray-100 sticky top-0 bg-white rounded-t-3xl z-10">
+            <div className="flex items-start justify-between p-5 sm:p-6 border-b border-gray-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 rounded-t-3xl z-10">
               <div className="flex-1 min-w-0 pr-3">
                 <div className="flex flex-wrap gap-2 mb-2">
                   <Badge categoria={aberto.categoria} />
                   {aberto.fixado && (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-500">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/40 text-indigo-500 dark:text-indigo-400">
                       <Pin className="w-3 h-3" /> Fixado
                     </span>
                   )}
                 </div>
-                <h2 className="text-xl font-bold text-gray-800 leading-snug">{aberto.titulo}</h2>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 leading-snug">{aberto.titulo}</h2>
               </div>
               <button
                 onClick={() => setAberto(null)}
-                className="p-2 rounded-xl hover:bg-gray-100 transition text-gray-400 hover:text-gray-600 shrink-0"
+                className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -290,25 +297,25 @@ export default function MuralAvisos() {
 
             {/* Corpo */}
             <div className="p-5 sm:p-6 space-y-4">
-              <div className="p-4 rounded-xl bg-gray-50">
-                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{aberto.conteudo}</p>
+              <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-700">
+                <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{aberto.conteudo}</p>
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 flex-1 min-w-[140px]">
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 dark:bg-gray-700 flex-1 min-w-[140px]">
                   <Calendar className="w-4 h-4 text-emerald-400 shrink-0" />
                   <div>
-                    <p className="text-xs text-gray-400 font-medium">Publicado em</p>
-                    <p className="text-sm text-gray-700 font-semibold">{formatarData(aberto.created_at)}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Publicado em</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-200 font-semibold">{formatarData(aberto.created_at)}</p>
                   </div>
                 </div>
 
                 {aberto.data_expiracao && (
-                  <div className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 flex-1 min-w-[140px]">
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 dark:bg-gray-700 flex-1 min-w-[140px]">
                     <Tag className="w-4 h-4 text-gray-400 shrink-0" />
                     <div>
-                      <p className="text-xs text-gray-400 font-medium">Válido até</p>
-                      <p className="text-sm text-gray-700 font-semibold">{formatarData(aberto.data_expiracao)}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Válido até</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-200 font-semibold">{formatarData(aberto.data_expiracao)}</p>
                     </div>
                   </div>
                 )}

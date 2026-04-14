@@ -8,7 +8,6 @@ import { Calendar, Clock, Clock3, ChevronRight, Lock } from "lucide-react";
 const MAX_TENTATIVAS_EVENTO = 5;
 const LOCKOUT_EVENTO_MS = 10 * 60 * 1000; // 10 minutos
 
-// Escapa texto para uso seguro dentro de HTML de modais
 function escaparHTML(str) {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -22,7 +21,6 @@ export default function EventoAccess() {
   const [assembleias, setAssembleias] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [filtro, setFiltro] = useState("todas");
-  // Rastreia tentativas por id de assembleia: { [id]: { count, lockedUntil } }
   const [tentativas, setTentativas] = useState({});
   const navigate = useNavigate();
 
@@ -37,7 +35,6 @@ export default function EventoAccess() {
       const { data, error } = await supabase
         .from("assembleias")
         .select("id, id_assembleia, titulo, descricao, data, ativa")
-        .or(`ativa.eq.true,data.gte.${agora}`)
         .order("ativa", { ascending: false })
         .order("data", { ascending: true });
 
@@ -52,7 +49,6 @@ export default function EventoAccess() {
   };
 
   const acessarAssembleia = async (assembleia) => {
-    // Verifica lockout para esta assembleia
     const estado = tentativas[assembleia.id] || { count: 0, lockedUntil: 0 };
     if (Date.now() < estado.lockedUntil) {
       const min = Math.ceil((estado.lockedUntil - Date.now()) / 60000);
@@ -126,7 +122,6 @@ export default function EventoAccess() {
         return;
       }
 
-      // Senha correta — zera tentativas desta assembleia
       setTentativas((prev) => ({ ...prev, [assembleia.id]: { count: 0, lockedUntil: 0 } }));
 
       if (!dados.ativa) {
@@ -189,40 +184,40 @@ export default function EventoAccess() {
       <div
         key={a.id}
         className={`
-          bg-white/50 backdrop-blur-sm rounded-2xl border shadow-md
+          bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border shadow-md
           p-5 sm:p-6 flex flex-col gap-4
           transition-all duration-200
           ${
             isAtiva
-              ? "border-emerald-100 hover:border-emerald-300 hover:shadow-lg hover:scale-[1.01]"
-              : "border-amber-100 opacity-80"
+              ? "border-emerald-100 dark:border-emerald-800 hover:border-emerald-300 dark:hover:border-emerald-600 hover:shadow-lg hover:scale-[1.01]"
+              : "border-amber-100 dark:border-amber-800 opacity-80"
           }
         `}
       >
         {/* Badge + título */}
         <div className="flex flex-col gap-2">
           {isAtiva ? (
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full w-fit">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/40 px-2.5 py-1 rounded-full w-fit">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Ativa
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-100 px-2.5 py-1 rounded-full w-fit">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/40 px-2.5 py-1 rounded-full w-fit">
               <Clock3 className="w-3 h-3" />
               Em breve
             </span>
           )}
-          <h2 className="text-lg sm:text-xl font-bold text-gray-800 leading-snug">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 leading-snug">
             {a.titulo}
           </h2>
         </div>
 
         {a.descricao && (
-          <p className="text-sm text-gray-500 leading-relaxed">{a.descricao}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{a.descricao}</p>
         )}
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1 border-t border-gray-100">
-          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
             <span className="flex items-center gap-1.5">
               <Calendar className="w-4 h-4 text-indigo-400 shrink-0" />
               {formatarData(a.data)}
@@ -242,7 +237,7 @@ export default function EventoAccess() {
               <ChevronRight className="w-4 h-4" />
             </button>
           ) : (
-            <div className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-gray-400 font-semibold text-sm bg-gray-100 cursor-not-allowed shrink-0 select-none">
+            <div className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-gray-400 dark:text-gray-500 font-semibold text-sm bg-gray-100 dark:bg-gray-700 cursor-not-allowed shrink-0 select-none">
               <Lock className="w-4 h-4" />
               Em breve
             </div>
@@ -259,10 +254,10 @@ export default function EventoAccess() {
       <main className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
         {/* Cabeçalho */}
         <div className="mt-8 mb-6 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
             Assembleias<span className="text-indigo-500">.</span>
           </h1>
-          <p className="text-gray-500 mt-2 text-sm sm:text-base">
+          <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm sm:text-base">
             Confira as assembleias disponíveis e participe.
           </p>
         </div>
@@ -277,7 +272,7 @@ export default function EventoAccess() {
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
                   filtro === tab.id
                     ? "bg-indigo-500 text-white shadow-md scale-[1.03]"
-                    : "bg-white/50 text-gray-500 hover:bg-white/80 border border-gray-200"
+                    : "bg-white/50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-700/80 border border-gray-200 dark:border-gray-600"
                 }`}
               >
                 {tab.label}
@@ -285,7 +280,7 @@ export default function EventoAccess() {
                   className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
                     filtro === tab.id
                       ? "bg-white/20 text-white"
-                      : "bg-gray-100 text-gray-400"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                   }`}
                 >
                   {tab.count}
@@ -306,10 +301,10 @@ export default function EventoAccess() {
         {!carregando && visiveis.length === 0 && (
           <div className="text-center py-20">
             <div className="text-5xl mb-4">📅</div>
-            <p className="text-lg font-medium text-gray-500">
+            <p className="text-lg font-medium text-gray-500 dark:text-gray-400">
               {emptyMessages[filtro]}
             </p>
-            <p className="text-sm mt-1 text-gray-400">
+            <p className="text-sm mt-1 text-gray-400 dark:text-gray-500">
               Fique atento a novos avisos.
             </p>
           </div>

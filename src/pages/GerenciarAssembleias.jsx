@@ -83,7 +83,10 @@ export default function GerenciarAssembleias() {
     try {
       const { error } = await supabase
         .from("assembleias")
-        .update({ ativa: novoStatus })
+        .update({
+          ativa: novoStatus,
+          bloqueada: !novoStatus, // inativou manualmente = bloqueia o cron; ativou = libera
+        })
         .eq("id", id);
 
       if (error) throw error;
@@ -105,7 +108,6 @@ export default function GerenciarAssembleias() {
 
   const verParticipacao = async (assembleiaId) => {
     try {
-      // 🔹 Busca quem votou (agrupando bloco/apartamento)
       const { data: votos, error: votosError } = await supabase
         .from("votos")
         .select("bloco, apartamento")
@@ -117,7 +119,6 @@ export default function GerenciarAssembleias() {
         votos.map((v) => `${v.bloco}-${v.apartamento}`)
       );
 
-      // 🔹 Busca todos usuários ativos
       const { data: usuarios, error: usuariosError } = await supabase
         .from("usuarios")
         .select("bloco, apartamento")
@@ -129,10 +130,8 @@ export default function GerenciarAssembleias() {
         usuarios.map((u) => `${u.bloco}-${u.apartamento}`)
       );
 
-      // 🔹 Calcula faltantes
       const faltando = [...todos].filter((b) => !votaram.has(b));
 
-      // 🔹 Exibe resultado
       const formatarLista = (lista, cor) =>
         lista.length > 0
           ? lista.map((item) => `<li style="color:${cor}; font-weight:500">${item.replace("-", " Ap ")}</li>`).join("")
@@ -160,25 +159,25 @@ export default function GerenciarAssembleias() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen text-gray-600">
+      <div className="flex justify-center items-center min-h-screen text-gray-600 dark:text-gray-300 bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         Carregando assembleias...
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar mostrarVoltar={true} />
 
-      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl p-6 sm:p-8 mt-20">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">
+      <div className="max-w-6xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6 sm:p-8 mt-20">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">
           Gerenciar Assembleias<span className="text-indigo-500">.</span>
         </h1>
 
         {/* Desktop Table */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full border-collapse text-sm text-gray-700">
+          <table className="w-full border-collapse text-sm text-gray-700 dark:text-gray-200">
             <thead>
-              <tr className="bg-indigo-100 text-gray-700">
+              <tr className="bg-indigo-100 dark:bg-indigo-900/50 text-gray-700 dark:text-gray-200">
                 <th className="p-3 text-left">Título</th>
                 <th className="p-3 text-center">Status</th>
                 <th className="p-3 text-center">Data</th>
@@ -190,14 +189,14 @@ export default function GerenciarAssembleias() {
                 assembleias.map((a) => (
                   <tr
                     key={a.id}
-                    className="border-b hover:bg-indigo-50 transition"
+                    className="border-b dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition"
                   >
                     <td className="p-3">{a.titulo}</td>
                     <td className="p-3 text-center">
                       {a.ativa ? (
-                        <span className="text-green-600 font-medium">Ativa</span>
+                        <span className="text-green-600 dark:text-green-400 font-medium">Ativa</span>
                       ) : (
-                        <span className="text-red-600 font-medium">
+                        <span className="text-red-600 dark:text-red-400 font-medium">
                           Inativa
                         </span>
                       )}
@@ -233,7 +232,7 @@ export default function GerenciarAssembleias() {
                 <tr>
                   <td
                     colSpan="4"
-                    className="text-center py-6 text-gray-500 font-medium"
+                    className="text-center py-6 text-gray-500 dark:text-gray-400 font-medium"
                   >
                     Nenhuma assembleia encontrada.
                   </td>
@@ -249,20 +248,20 @@ export default function GerenciarAssembleias() {
             assembleias.map((a) => (
               <div
                 key={a.id}
-                className="bg-white/70 backdrop-blur-md border border-white/30 shadow-md rounded-xl p-4"
+                className="bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-white/30 dark:border-gray-600/30 shadow-md rounded-xl p-4"
               >
-                <p className="text-gray-800 font-semibold text-sm break-all">
+                <p className="text-gray-800 dark:text-gray-100 font-semibold text-sm break-all">
                   {a.titulo}
                 </p>
-                <p className="text-gray-600 text-sm mt-1">
+                <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
                   Status:{" "}
                   {a.ativa ? (
-                    <span className="text-green-600 font-medium">Ativa</span>
+                    <span className="text-green-600 dark:text-green-400 font-medium">Ativa</span>
                   ) : (
-                    <span className="text-red-600 font-medium">Inativa</span>
+                    <span className="text-red-600 dark:text-red-400 font-medium">Inativa</span>
                   )}
                 </p>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Data: {new Date(a.criado_em).toLocaleDateString("pt-BR")}
                 </p>
 
@@ -294,7 +293,7 @@ export default function GerenciarAssembleias() {
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-500 font-medium">
+            <p className="text-center text-gray-500 dark:text-gray-400 font-medium">
               Nenhuma assembleia encontrada.
             </p>
           )}

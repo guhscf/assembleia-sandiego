@@ -8,8 +8,8 @@ import {
 } from "lucide-react";
 
 const CATEGORIAS = [
-  { value: "informativo", label: "Informativo", color: "bg-blue-100 text-blue-700" },
-  { value: "urgente",     label: "Urgente",     color: "bg-red-100 text-red-700" },
+  { value: "informativo", label: "Informativo", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
+  { value: "urgente",     label: "Urgente",     color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
 ];
 
 const FORM_VAZIO = {
@@ -35,7 +35,7 @@ function Badge({ categoria }) {
 function Campo({ label, required, children }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-gray-700">
+      <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}
@@ -44,13 +44,13 @@ function Campo({ label, required, children }) {
 }
 
 const inputCls =
-  "w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm text-gray-800 transition placeholder:text-gray-400";
+  "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm text-gray-800 dark:text-gray-100 transition placeholder:text-gray-400 dark:placeholder:text-gray-500";
 
 export default function GerenciarAvisos() {
   const [avisos, setAvisos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [mostrarForm, setMostrarForm] = useState(false);
-  const [editando, setEditando] = useState(null); // aviso em edição
+  const [editando, setEditando] = useState(null);
   const [form, setForm] = useState(FORM_VAZIO);
   const [salvando, setSalvando] = useState(false);
   const [detalhe, setDetalhe] = useState(null);
@@ -193,10 +193,10 @@ export default function GerenciarAvisos() {
         {/* Header */}
         <div className="mt-8 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
               Avisos<span className="text-indigo-500">.</span>
             </h1>
-            <p className="text-gray-500 mt-1 text-sm sm:text-base">
+            <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm sm:text-base">
               Gerencie os comunicados exibidos aos moradores.
             </p>
           </div>
@@ -220,8 +220,8 @@ export default function GerenciarAvisos() {
         {!carregando && avisos.length === 0 && (
           <div className="text-center py-20">
             <div className="text-5xl mb-4">📢</div>
-            <p className="text-lg font-medium text-gray-500">Nenhum aviso cadastrado</p>
-            <p className="text-sm text-gray-400 mt-1">Clique em "Novo Aviso" para começar.</p>
+            <p className="text-lg font-medium text-gray-500 dark:text-gray-400">Nenhum aviso cadastrado</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Clique em "Novo Aviso" para começar.</p>
           </div>
         )}
 
@@ -232,9 +232,8 @@ export default function GerenciarAvisos() {
               <button
                 key={aviso.id}
                 onClick={() => setDetalhe(aviso)}
-                className="bg-white/50 backdrop-blur-sm rounded-2xl border border-white/30 shadow-md p-4 sm:p-5 flex items-start gap-4 text-left w-full hover:shadow-lg hover:scale-[1.01] transition-all duration-200 group"
+                className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/30 dark:border-gray-700/30 shadow-md p-4 sm:p-5 flex items-start gap-4 text-left w-full hover:shadow-lg hover:scale-[1.01] transition-all duration-200 group"
               >
-                {/* Pin indicator */}
                 {aviso.fixado && (
                   <div className="shrink-0 mt-0.5">
                     <Pin className="w-4 h-4 text-indigo-400" />
@@ -245,23 +244,23 @@ export default function GerenciarAvisos() {
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
                     <Badge categoria={aviso.categoria} />
                     {!aviso.ativo && (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
                         <EyeOff className="w-3 h-3" />
                         Inativo
                       </span>
                     )}
                   </div>
-                  <p className="font-semibold text-gray-800 truncate">{aviso.titulo}</p>
-                  <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{aviso.conteudo}</p>
+                  <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">{aviso.titulo}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{aviso.conteudo}</p>
                   {(aviso.data_inicio || aviso.data_expiracao) && (
-                    <div className="flex flex-wrap gap-3 mt-2 text-xs text-gray-400">
+                    <div className="flex flex-wrap gap-3 mt-2 text-xs text-gray-400 dark:text-gray-500">
                       {aviso.data_inicio && <span>📅 Início: {formatarData(aviso.data_inicio)}</span>}
                       {aviso.data_expiracao && <span>⏳ Expira: {formatarData(aviso.data_expiracao)}</span>}
                     </div>
                   )}
                 </div>
 
-                <ChevronRight className="w-5 h-5 text-gray-300 shrink-0 self-center group-hover:text-indigo-400 transition" />
+                <ChevronRight className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0 self-center group-hover:text-indigo-400 transition" />
               </button>
             ))}
           </div>
@@ -274,28 +273,28 @@ export default function GerenciarAvisos() {
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) setDetalhe(null); }}
         >
-          <div className="bg-white w-full sm:rounded-3xl sm:max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl rounded-t-3xl">
+          <div className="bg-white dark:bg-gray-800 w-full sm:rounded-3xl sm:max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl rounded-t-3xl">
             {/* Header */}
-            <div className="flex items-start justify-between p-5 sm:p-6 border-b border-gray-100 sticky top-0 bg-white rounded-t-3xl z-10">
+            <div className="flex items-start justify-between p-5 sm:p-6 border-b border-gray-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 rounded-t-3xl z-10">
               <div className="flex-1 min-w-0 pr-3">
                 <div className="flex flex-wrap gap-2 mb-1.5">
                   <Badge categoria={detalhe.categoria} />
                   {detalhe.fixado && (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400">
                       <Pin className="w-3 h-3" /> Fixado
                     </span>
                   )}
                   {!detalhe.ativo && (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
                       <EyeOff className="w-3 h-3" /> Inativo
                     </span>
                   )}
                 </div>
-                <h2 className="text-xl font-bold text-gray-800">{detalhe.titulo}</h2>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">{detalhe.titulo}</h2>
               </div>
               <button
                 onClick={() => setDetalhe(null)}
-                className="p-2 rounded-xl hover:bg-gray-100 transition text-gray-400 hover:text-gray-600 shrink-0"
+                className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -303,27 +302,27 @@ export default function GerenciarAvisos() {
 
             {/* Corpo */}
             <div className="p-5 sm:p-6 space-y-5">
-              <div className="p-4 rounded-xl bg-gray-50">
-                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{detalhe.conteudo}</p>
+              <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-700">
+                <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{detalhe.conteudo}</p>
               </div>
 
               {(detalhe.data_inicio || detalhe.data_expiracao) && (
                 <div className="grid grid-cols-2 gap-3">
                   {detalhe.data_inicio && (
-                    <div className="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50">
+                    <div className="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50 dark:bg-gray-700">
                       <Calendar className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
                       <div>
-                        <p className="text-xs text-gray-400 font-medium">Data início</p>
-                        <p className="text-sm text-gray-700 font-semibold">{formatarData(detalhe.data_inicio)}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Data início</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-200 font-semibold">{formatarData(detalhe.data_inicio)}</p>
                       </div>
                     </div>
                   )}
                   {detalhe.data_expiracao && (
-                    <div className="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50">
+                    <div className="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50 dark:bg-gray-700">
                       <Calendar className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
                       <div>
-                        <p className="text-xs text-gray-400 font-medium">Expira em</p>
-                        <p className="text-sm text-gray-700 font-semibold">{formatarData(detalhe.data_expiracao)}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Expira em</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-200 font-semibold">{formatarData(detalhe.data_expiracao)}</p>
                       </div>
                     </div>
                   )}
@@ -331,13 +330,13 @@ export default function GerenciarAvisos() {
               )}
 
               {/* Ações */}
-              <div className="flex gap-3 border-t border-gray-100 pt-5">
+              <div className="flex gap-3 border-t border-gray-100 dark:border-gray-700 pt-5">
                 <button
                   onClick={() => toggleAtivo(detalhe)}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition shadow-sm ${
                     detalhe.ativo
-                      ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
+                      ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      : "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
                   }`}
                 >
                   {detalhe.ativo ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -345,14 +344,14 @@ export default function GerenciarAvisos() {
                 </button>
                 <button
                   onClick={() => abrirEditar(detalhe)}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition shadow-sm"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition shadow-sm"
                 >
                   <Pencil className="w-4 h-4" />
                   Editar
                 </button>
                 <button
                   onClick={() => excluir(detalhe)}
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm bg-red-50 text-red-500 hover:bg-red-100 transition shadow-sm"
+                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition shadow-sm"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -368,15 +367,15 @@ export default function GerenciarAvisos() {
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) fecharForm(); }}
         >
-          <div className="bg-white w-full sm:rounded-3xl sm:max-w-xl max-h-[95vh] overflow-y-auto shadow-2xl rounded-t-3xl">
+          <div className="bg-white dark:bg-gray-800 w-full sm:rounded-3xl sm:max-w-xl max-h-[95vh] overflow-y-auto shadow-2xl rounded-t-3xl">
             {/* Header */}
-            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gray-100 sticky top-0 bg-white rounded-t-3xl z-10">
-              <h2 className="text-xl font-bold text-gray-800">
+            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gray-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 rounded-t-3xl z-10">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                 {editando ? "Editar Aviso" : "Novo Aviso"}
               </h2>
               <button
                 onClick={fecharForm}
-                className="p-2 rounded-xl hover:bg-gray-100 transition text-gray-400 hover:text-gray-600"
+                className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -450,16 +449,16 @@ export default function GerenciarAvisos() {
                   onClick={() => set("fixado", !form.fixado)}
                   className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left ${
                     form.fixado
-                      ? "border-indigo-400 bg-indigo-50"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      ? "border-indigo-400 bg-indigo-50 dark:bg-indigo-900/30"
+                      : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500"
                   }`}
                 >
                   <Pin className={`w-5 h-5 shrink-0 ${form.fixado ? "text-indigo-500" : "text-gray-400"}`} />
                   <div>
-                    <p className={`text-sm font-semibold ${form.fixado ? "text-indigo-700" : "text-gray-700"}`}>
+                    <p className={`text-sm font-semibold ${form.fixado ? "text-indigo-700 dark:text-indigo-400" : "text-gray-700 dark:text-gray-200"}`}>
                       Fixar aviso
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">Aparece no topo da lista</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Aparece no topo da lista</p>
                   </div>
                 </button>
 
@@ -468,8 +467,8 @@ export default function GerenciarAvisos() {
                   onClick={() => set("ativo", !form.ativo)}
                   className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left ${
                     form.ativo
-                      ? "border-emerald-400 bg-emerald-50"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-900/30"
+                      : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500"
                   }`}
                 >
                   {form.ativo
@@ -477,10 +476,10 @@ export default function GerenciarAvisos() {
                     : <EyeOff className="w-5 h-5 shrink-0 text-gray-400" />
                   }
                   <div>
-                    <p className={`text-sm font-semibold ${form.ativo ? "text-emerald-700" : "text-gray-700"}`}>
+                    <p className={`text-sm font-semibold ${form.ativo ? "text-emerald-700 dark:text-emerald-400" : "text-gray-700 dark:text-gray-200"}`}>
                       {form.ativo ? "Aviso ativo" : "Aviso inativo"}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                       {form.ativo ? "Visível para os moradores" : "Oculto para os moradores"}
                     </p>
                   </div>
@@ -488,11 +487,11 @@ export default function GerenciarAvisos() {
               </div>
 
               {/* Botões */}
-              <div className="flex gap-3 pt-1 border-t border-gray-100">
+              <div className="flex gap-3 pt-1 border-t border-gray-100 dark:border-gray-700">
                 <button
                   onClick={fecharForm}
                   disabled={salvando}
-                  className="px-5 py-3 rounded-xl border border-gray-200 text-gray-500 text-sm font-semibold hover:bg-gray-50 transition disabled:opacity-60"
+                  className="px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-60"
                 >
                   Cancelar
                 </button>
