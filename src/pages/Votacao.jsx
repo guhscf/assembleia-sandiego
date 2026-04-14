@@ -61,7 +61,6 @@ export default function Votacao() {
     try {
       setLoading(true);
 
-      // 🔒 Verifica se já existe voto do mesmo bloco/apto
       const { data: jaVotou } = await supabase
         .from("votos")
         .select("id")
@@ -79,11 +78,10 @@ export default function Votacao() {
         return;
       }
 
-      // 🗳️ Insere o voto (com nome)
       const { error: insertError } = await supabase.from("votos").insert({
         id_assembleia: assembleiaAtiva.id,
         id_usuario: usuario.id,
-        nome: usuario.nome, // 👈 novo campo adicionado
+        nome: usuario.nome,
         bloco: usuario.bloco,
         apartamento: usuario.apartamento,
         cpf: usuario.cpf,
@@ -111,18 +109,18 @@ export default function Votacao() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen text-gray-600">
+      <div className="flex justify-center items-center min-h-screen text-gray-600 dark:text-gray-300 bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         Carregando votação...
       </div>
     );
 
   if (!assembleiaAtiva)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 flex flex-col items-center justify-center text-gray-700">
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col items-center justify-center text-gray-700 dark:text-gray-200">
         <Navbar mostrarVoltar={true} />
         <div className="text-center mt-10">
           <h2 className="text-2xl font-semibold">Nenhuma assembleia ativa.</h2>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             Aguarde até que uma nova assembleia seja ativada.
           </p>
         </div>
@@ -130,24 +128,24 @@ export default function Votacao() {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Navbar mostrarVoltar={true} />
 
       <div className="flex justify-center items-start pt-24 px-4">
-        <div className="w-full max-w-2xl bg-white/40 backdrop-blur-md p-6 sm:p-8 rounded-3xl shadow-lg border border-white/30">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 text-center">
+        <div className="w-full max-w-2xl bg-white/40 dark:bg-gray-800/50 backdrop-blur-md p-6 sm:p-8 rounded-3xl shadow-lg border border-white/30 dark:border-gray-700/30">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-center">
             {assembleiaAtiva.titulo}
             <span className="text-indigo-500">.</span>
           </h1>
 
-          <p className="text-center text-gray-600 mb-2 text-sm sm:text-base">
+          <p className="text-center text-gray-600 dark:text-gray-300 mb-2 text-sm sm:text-base">
             Data da Assembleia:{" "}
             <b>
               {new Date(assembleiaAtiva.criado_em).toLocaleDateString("pt-BR")}
             </b>
           </p>
 
-          <p className="text-center text-gray-600 mb-6 text-sm sm:text-base">
+          <p className="text-center text-gray-600 dark:text-gray-300 mb-6 text-sm sm:text-base">
             {assembleiaAtiva.descricao || "Selecione uma opção para votar."}
           </p>
 
@@ -158,11 +156,11 @@ export default function Votacao() {
                   key={index}
                   className={`flex items-center justify-between border rounded-xl p-4 cursor-pointer transition ${
                     votoSelecionado === opcao
-                      ? "border-indigo-500 bg-indigo-50"
-                      : "border-gray-300 hover:border-indigo-300"
+                      ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30"
+                      : "border-gray-300 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 dark:bg-gray-700/30"
                   }`}
                 >
-                  <span className="text-gray-800 text-sm sm:text-base">
+                  <span className="text-gray-800 dark:text-gray-100 text-sm sm:text-base">
                     {opcao}
                   </span>
                   <input
@@ -176,7 +174,7 @@ export default function Votacao() {
                 </label>
               ))
             ) : (
-              <p className="text-center text-gray-500">
+              <p className="text-center text-gray-500 dark:text-gray-400">
                 Nenhuma opção disponível.
               </p>
             )}

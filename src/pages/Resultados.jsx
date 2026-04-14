@@ -17,7 +17,6 @@ export default function Resultados() {
   const [votos, setVotos] = useState([]);
   const [dadosGrafico, setDadosGrafico] = useState([]);
 
-  // 🔹 Carrega assembleias ao iniciar
   useEffect(() => {
     const carregarAssembleias = async () => {
       const { data, error } = await supabase.from("assembleias").select("*");
@@ -27,7 +26,6 @@ export default function Resultados() {
     carregarAssembleias();
   }, []);
 
-  // 🔹 Carrega votos da assembleia selecionada
   useEffect(() => {
     if (!assembleiaSelecionada) return;
 
@@ -60,7 +58,6 @@ export default function Resultados() {
     carregarVotos();
   }, [assembleiaSelecionada]);
 
-  // 📥 Exporta CSV
   const exportarCSV = () => {
     if (votos.length === 0) {
       Swal.fire({
@@ -87,11 +84,11 @@ export default function Resultados() {
   const COLORS = ["#4F46E5", "#10B981", "#F59E0B", "#EF4444", "#3B82F6", "#8B5CF6"];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
+    <div className="min-h-screen">
       <Navbar mostrarVoltar={true} />
 
-      <div className="max-w-4xl mx-auto mt-24 p-8 bg-white/40 backdrop-blur-md shadow-lg border border-white/30 rounded-3xl">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+      <div className="max-w-4xl mx-auto mt-24 p-8 bg-white/40 dark:bg-gray-800/50 backdrop-blur-md shadow-lg border border-white/30 dark:border-gray-700/30 rounded-3xl">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">
           Resultados das Assembleias<span className="text-indigo-500">.</span>
         </h1>
 
@@ -99,7 +96,7 @@ export default function Resultados() {
           <select
             value={assembleiaSelecionada}
             onChange={(e) => setAssembleiaSelecionada(e.target.value)}
-            className="p-3 rounded-xl border border-gray-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none w-full md:w-2/3"
+            className="p-3 rounded-xl border border-gray-300 dark:border-gray-600 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 outline-none w-full md:w-2/3 text-gray-800 dark:text-gray-100 bg-white/70 dark:bg-gray-700/70"
           >
             <option value="">Selecione uma assembleia...</option>
             {assembleias.map((a) => (
@@ -142,22 +139,22 @@ export default function Resultados() {
               </ResponsiveContainer>
             </div>
 
-            <div className="bg-white/70 rounded-xl shadow-sm border border-gray-200 w-full p-5">
-              <h2 className="text-lg font-semibold text-gray-700 mb-3 text-center">
+            <div className="bg-white/70 dark:bg-gray-700/70 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 w-full p-5">
+              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">
                 Detalhes dos votos
               </h2>
-              <div className="flex flex-wrap justify-center gap-6 text-gray-700">
+              <div className="flex flex-wrap justify-center gap-6 text-gray-700 dark:text-gray-200">
                 {dadosGrafico.map((item, index) => (
                   <div
                     key={index}
-                    className="flex flex-col items-center p-3 bg-white rounded-lg shadow-sm border border-gray-100 min-w-[120px]"
+                    className="flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 min-w-[120px]"
                   >
                     <span
                       className="w-4 h-4 rounded-full mb-2"
                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     ></span>
                     <span className="font-semibold">{item.name}</span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       {item.value} voto{item.value > 1 ? "s" : ""}
                     </span>
                   </div>
@@ -166,11 +163,11 @@ export default function Resultados() {
             </div>
           </div>
         ) : assembleiaSelecionada ? (
-          <p className="text-center text-gray-600">
+          <p className="text-center text-gray-600 dark:text-gray-400">
             Nenhum voto registrado ainda para esta assembleia.
           </p>
         ) : (
-          <p className="text-center text-gray-500">
+          <p className="text-center text-gray-500 dark:text-gray-400">
             Selecione uma assembleia para visualizar os resultados.
           </p>
         )}
