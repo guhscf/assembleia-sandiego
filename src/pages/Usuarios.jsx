@@ -5,7 +5,6 @@ import Navbar from "../components/Navbar";
 import {
   Search,
   UserCheck,
-  UserX,
   Trash2,
   Pencil,
   X,
@@ -159,7 +158,7 @@ function EditModal({ usuario, onClose, onSave }) {
         </div>
 
         {/* Form */}
-        <div className="px-6 py-5 grid grid-cols-2 gap-4">
+        <div className="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="col-span-2">{field("Nome completo", "nome")}</div>
           {field("CPF", "cpf")}
           {field("Bloco", "bloco")}
@@ -341,7 +340,7 @@ export default function Usuarios() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
             { icon: Users, label: "Total", value: total, color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/30" },
             { icon: UserCheck, label: "Ativos", value: ativos, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/30" },
@@ -373,7 +372,7 @@ export default function Usuarios() {
               className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:ring-2 focus:ring-indigo-300 outline-none shadow-sm"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {[
               { key: "todos", label: "Todos" },
               { key: "ativos", label: "Ativos" },
