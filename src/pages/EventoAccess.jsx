@@ -22,11 +22,24 @@ export default function EventoAccess() {
   const [carregando, setCarregando] = useState(true);
   const [filtro, setFiltro] = useState("todas");
   const [tentativas, setTentativas] = useState({});
+  const [usuarioAtual, setUsuarioAtual] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     buscarAssembleias();
+    buscarUsuarioAtual();
   }, []);
+
+  const buscarUsuarioAtual = async () => {
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
+    const { data } = await supabase
+      .from("usuarios")
+      .select("id, inadimplente")
+      .eq("id", auth.user.id)
+      .single();
+    if (data) setUsuarioAtual(data);
+  };
 
   const buscarAssembleias = async () => {
     setCarregando(true);
@@ -48,6 +61,22 @@ export default function EventoAccess() {
   };
 
   const acessarAssembleia = async (assembleia) => {
+    if (usuarioAtual?.inadimplente) {
+      Swal.fire({
+        title: "Acesso bloqueado",
+        html: `
+          <p style="color:#6b7280;font-size:0.95rem;line-height:1.5">
+            Existem <b style="color:#ef4444">pendências financeiras</b> associadas à sua unidade.<br/><br/>
+            Regularize sua situação junto à administração do condomínio para participar das assembleias.
+          </p>
+        `,
+        icon: "error",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#6366f1",
+      });
+      return;
+    }
+
     const estado = tentativas[assembleia.id] || { count: 0, lockedUntil: 0 };
     if (Date.now() < estado.lockedUntil) {
       const min = Math.ceil((estado.lockedUntil - Date.now()) / 60000);
