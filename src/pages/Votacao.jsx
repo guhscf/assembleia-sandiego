@@ -114,6 +114,28 @@ export default function Votacao() {
       </div>
     );
 
+  if (usuario?.inadimplente)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col items-center justify-center px-4">
+        <Navbar mostrarVoltar={true} />
+        <div className="w-full max-w-md bg-white/40 dark:bg-gray-800/50 backdrop-blur-md rounded-3xl shadow-lg border border-white/30 dark:border-gray-700/30 p-8 text-center mt-10">
+          <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+            Participação bloqueada
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+            Existem <span className="font-semibold text-red-500">pendências financeiras</span> associadas à sua unidade.
+            <br /><br />
+            Regularize sua situação junto à administração do condomínio para poder participar das assembleias.
+          </p>
+        </div>
+      </div>
+    );
+
   if (!assembleiaAtiva)
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col items-center justify-center text-gray-700 dark:text-gray-200">
