@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../supabase.js";
 import Navbar from "../components/Navbar";
 import Swal from "sweetalert2";
+import { enviarNotificacao } from "../services/notificacoes";
 import {
   Plus, X, Pencil, Trash2, Pin, Eye, EyeOff,
   Calendar, Tag, AlignLeft, ChevronRight,
@@ -130,6 +131,13 @@ export default function GerenciarAvisos() {
           .eq("id", editando.id));
       } else {
         ({ error } = await supabase.from("avisos").insert(payload));
+        if (!error && payload.ativo) {
+          enviarNotificacao({
+            titulo: "Novo aviso",
+            corpo: payload.titulo,
+            role: "morador",
+          });
+        }
       }
 
       if (error) throw error;

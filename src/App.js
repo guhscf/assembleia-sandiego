@@ -1,7 +1,11 @@
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabase";
 import { DarkModeProvider } from "./contexts/DarkModeContext";
+import { NotificacoesProvider, useNotificacoes } from "./contexts/NotificacoesContext";
+import { inicializarNotificacoes } from "./services/notificacoes";
+import { VERSAO_APP } from "./version";
+import { Capacitor } from "@capacitor/core";
 
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
@@ -22,12 +26,65 @@ import MuralAvisos from "./pages/MuralAvisos";
 import Ocorrencias from "./pages/Ocorrencias";
 import GerenciarOcorrencias from "./pages/GerenciarOcorrencias";
 
-export default function App() {
+function compararVersao(a, b) {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < 3; i++) {
+    if ((pa[i] ?? 0) < (pb[i] ?? 0)) return -1;
+    if ((pa[i] ?? 0) > (pb[i] ?? 0)) return 1;
+  }
+  return 0;
+}
+
+async function verificarVersao() {
+  if (!Capacitor.isNativePlatform()) return;
+
+  const { data } = await supabase.from("config").select("versao_atual, versao_minima, url_apk").eq("id", 1).single();
+  if (!data) return;
+
+  const { versao_atual, versao_minima, url_apk } = data;
+
+  if (compararVersao(VERSAO_APP, versao_minima) < 0) {
+    const { default: Swal } = await import("sweetalert2");
+    await Swal.fire({
+      title: "Atualização obrigatória",
+      html: `Sua versão <b>${VERSAO_APP}</b> não é mais suportada.<br/>Baixe a versão <b>${versao_atual}</b> para continuar.`,
+      icon: "error",
+      confirmButtonText: url_apk ? "Baixar agora" : "Ok",
+      confirmButtonColor: "#6366f1",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+    if (url_apk) window.open(url_apk, "_blank");
+    return;
+  }
+
+  if (compararVersao(VERSAO_APP, versao_atual) < 0) {
+    const { default: Swal } = await import("sweetalert2");
+    const result = await Swal.fire({
+      title: "Nova versão disponível",
+      html: `Versão <b>${versao_atual}</b> disponível. Você está na <b>${VERSAO_APP}</b>.`,
+      icon: "info",
+      confirmButtonText: url_apk ? "Baixar agora" : "Ok",
+      cancelButtonText: "Agora não",
+      showCancelButton: !!url_apk,
+      confirmButtonColor: "#6366f1",
+    });
+    if (result.isConfirmed && url_apk) window.open(url_apk, "_blank");
+  }
+}
+
+function AppInner() {
   const [usuario, setUsuario] = useState(null);
   const [perfil, setPerfil] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { adicionarNotificacao } = useNotificacoes();
+
+  const onNotificacaoRecebida = useCallback((notif) => {
+    adicionarNotificacao(notif);
+  }, [adicionarNotificacao]);
 
   const verificarSessao = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -49,6 +106,7 @@ export default function App() {
       if (dadosUsuario.ativo) {
         setUsuario(user);
         setPerfil(dadosUsuario.role);
+        inicializarNotificacoes(user.id, onNotificacaoRecebida);
       } else {
         await supabase.auth.signOut();
         setUsuario(null);
@@ -63,6 +121,7 @@ export default function App() {
   };
 
   useEffect(() => {
+    verificarVersao();
     verificarSessao();
 
     const { data: listener } = supabase.auth.onAuthStateChange((event) => {
@@ -101,16 +160,13 @@ export default function App() {
 
   if (carregando) {
     return (
-      <DarkModeProvider>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-700 dark:text-gray-200 text-lg font-medium">
-          Carregando...
-        </div>
-      </DarkModeProvider>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-700 dark:text-gray-200 text-lg font-medium">
+        Carregando...
+      </div>
     );
   }
 
   return (
-    <DarkModeProvider>
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-x-hidden">
       <div className="flex flex-col min-h-screen px-2 sm:px-4 md:px-6 lg:px-8">
         <main className="flex-grow w-full">
@@ -131,7 +187,6 @@ export default function App() {
               path="/salao"
               element={usuario ? <ReservarSalao /> : <Navigate to="/" />}
             />
-
             <Route
               path="/votacao"
               element={usuario && perfil === "morador" ? <Votacao /> : <Navigate to="/" />}
@@ -180,6 +235,15 @@ export default function App() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <DarkModeProvider>
+      <NotificacoesProvider>
+        <AppInner />
+      </NotificacoesProvider>
     </DarkModeProvider>
   );
 }

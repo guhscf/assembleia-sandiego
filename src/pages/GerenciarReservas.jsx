@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../supabase.js";
 import Navbar from "../components/Navbar";
 import Swal from "sweetalert2";
+import { enviarNotificacao } from "../services/notificacoes";
 import {
   X, Check, XCircle, ChevronRight,
   Calendar, Clock, Users, Mail, Phone, CreditCard, FileText,
@@ -84,6 +85,12 @@ export default function GerenciarReservas() {
 
       if (error) throw error;
 
+      enviarNotificacao({
+        titulo: "Reserva confirmada ✅",
+        corpo: `Sua reserva ${selecionada.codigo_reserva} foi aprovada!`,
+        email: selecionada.cliente_email,
+      });
+
       await enviarEmail(
         selecionada.cliente_email,
         `✅ Reserva ${selecionada.codigo_reserva} confirmada — SanDiego+`,
@@ -127,6 +134,12 @@ export default function GerenciarReservas() {
         .eq("id", selecionada.id);
 
       if (error) throw error;
+
+      enviarNotificacao({
+        titulo: "Reserva recusada ❌",
+        corpo: `Sua reserva ${selecionada.codigo_reserva} foi recusada. Motivo: ${motivoRecusa.trim()}`,
+        email: selecionada.cliente_email,
+      });
 
       await enviarEmail(
         selecionada.cliente_email,
