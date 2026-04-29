@@ -163,7 +163,7 @@ export default function Login() {
           Faça seu login<span className="text-indigo-500">.</span>
         </h1>
         <p className="text-center text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 text-sm sm:text-base">
-          Acesse sua conta para participar da assembleia
+          Acesse sua conta do Residencial SanDiego.
         </p>
 
         {/* Banner de bloqueio */}

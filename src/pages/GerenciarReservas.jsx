@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Swal from "sweetalert2";
 import { enviarNotificacao } from "../services/notificacoes";
 import {
-  X, Check, XCircle, ChevronRight,
+  X, Check, XCircle, ChevronRight, CheckCircle,
   Calendar, Clock, Users, Mail, Phone, CreditCard, FileText,
 } from "lucide-react";
 
@@ -112,6 +112,38 @@ export default function GerenciarReservas() {
       buscarReservas();
     } catch {
       Swal.fire("Erro", "Não foi possível aprovar a reserva.", "error");
+    } finally {
+      setProcessando(false);
+    }
+  };
+
+  const concluir = async () => {
+    setProcessando(true);
+    try {
+      const { error } = await supabase
+        .from("reservas")
+        .update({ status: "concluida", updated_at: new Date().toISOString() })
+        .eq("id", selecionada.id);
+
+      if (error) throw error;
+
+      enviarNotificacao({
+        titulo: "Reserva concluída ✅",
+        corpo: `Sua reserva ${selecionada.codigo_reserva} foi concluída. Obrigado!`,
+        email: selecionada.cliente_email,
+      });
+
+      await Swal.fire({
+        title: "Reserva concluída!",
+        text: "O status foi atualizado para concluída.",
+        icon: "success",
+        confirmButtonColor: "#6366f1",
+      });
+
+      fecharModal();
+      buscarReservas();
+    } catch {
+      Swal.fire("Erro", "Não foi possível concluir a reserva.", "error");
     } finally {
       setProcessando(false);
     }
@@ -344,6 +376,20 @@ export default function GerenciarReservas() {
                   </div>
                 )}
               </section>
+
+              {/* Ações — reservas confirmadas */}
+              {selecionada.status === "confirmada" && (
+                <section className="border-t border-gray-100 dark:border-gray-700 pt-5">
+                  <button
+                    onClick={concluir}
+                    disabled={processando}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold text-sm bg-gray-500 hover:bg-gray-600 shadow-md transition disabled:opacity-60"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Concluir Reserva
+                  </button>
+                </section>
+              )}
 
               {/* Ações — somente reservas pendentes */}
               {selecionada.status === "pendente" && (

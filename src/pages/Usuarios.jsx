@@ -50,16 +50,15 @@ function Badge({ ativo, inadimplente }) {
 }
 
 function RoleBadge({ role }) {
-  const isAdmin = role === "admin";
+  const config = {
+    admin:       { label: "Admin",       cls: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" },
+    proprietario:{ label: "Proprietário",cls: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300" },
+    inquilino:   { label: "Inquilino",   cls: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" },
+  };
+  const { label, cls } = config[role] ?? config.inquilino;
   return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-        isAdmin
-          ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
-          : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
-      }`}
-    >
-      {isAdmin ? "Admin" : "Morador"}
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${cls}`}>
+      {label}
     </span>
   );
 }
@@ -71,9 +70,10 @@ function EditModal({ usuario, onClose, onSave }) {
     cpf: usuario.cpf || "",
     bloco: usuario.bloco || "",
     apartamento: usuario.apartamento || "",
-    role: usuario.role || "morador",
+    role: usuario.role || "inquilino",
     ativo: usuario.ativo ?? false,
     inadimplente: usuario.inadimplente ?? false,
+    procuracao: usuario.procuracao ?? false,
   });
   const [salvando, setSalvando] = useState(false);
 
@@ -90,6 +90,7 @@ function EditModal({ usuario, onClose, onSave }) {
           role: form.role,
           ativo: form.ativo,
           inadimplente: form.inadimplente,
+          procuracao: form.procuracao,
         })
         .eq("id", usuario.id);
 
@@ -113,7 +114,7 @@ function EditModal({ usuario, onClose, onSave }) {
           onChange={(e) =>
             setForm((p) => ({
               ...p,
-              [key]: (key === "ativo" || key === "inadimplente") ? e.target.value === "true" : e.target.value,
+              [key]: (key === "ativo" || key === "inadimplente" || key === "procuracao") ? e.target.value === "true" : e.target.value,
             }))
           }
           className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:ring-2 focus:ring-indigo-300 outline-none"
@@ -164,7 +165,8 @@ function EditModal({ usuario, onClose, onSave }) {
           {field("Bloco", "bloco")}
           {field("Apartamento", "apartamento")}
           {field("Tipo de conta", "role", "text", [
-            { value: "morador", label: "Morador" },
+            { value: "proprietario", label: "Proprietário" },
+            { value: "inquilino", label: "Inquilino" },
             { value: "admin", label: "Administrador" },
           ])}
           {field("Status", "ativo", "text", [
@@ -172,6 +174,10 @@ function EditModal({ usuario, onClose, onSave }) {
             { value: "false", label: "Pendente" },
           ])}
           {field("Inadimplente", "inadimplente", "text", [
+            { value: "false", label: "Não" },
+            { value: "true", label: "Sim" },
+          ])}
+          {form.role === "inquilino" && field("Procuração?", "procuracao", "text", [
             { value: "false", label: "Não" },
             { value: "true", label: "Sim" },
           ])}
@@ -295,6 +301,8 @@ export default function Usuarios() {
       if (filtroStatus === "ativos") return u.ativo && !u.inadimplente;
       if (filtroStatus === "pendentes") return !u.ativo && !u.inadimplente;
       if (filtroStatus === "inadimplentes") return u.inadimplente;
+      if (filtroStatus === "inquilinos") return u.role === "inquilino";
+      if (filtroStatus === "proprietarios") return u.role === "proprietario";
       return true;
     })
     .filter((u) =>
@@ -308,6 +316,8 @@ export default function Usuarios() {
   const ativos = usuarios.filter((u) => u.ativo && !u.inadimplente).length;
   const pendentes = usuarios.filter((u) => !u.ativo && !u.inadimplente).length;
   const inadimplentes = usuarios.filter((u) => u.inadimplente).length;
+  const inquilinos = usuarios.filter((u) => u.role === "inquilino").length;
+  const proprietarios = usuarios.filter((u) => u.role === "proprietario").length;
 
   if (loading)
     return (
@@ -340,23 +350,30 @@ export default function Usuarios() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
           {[
-            { icon: Users, label: "Total", value: total, color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/30" },
-            { icon: UserCheck, label: "Ativos", value: ativos, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/30" },
-            { icon: Clock, label: "Pendentes", value: pendentes, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-900/30" },
-            { icon: AlertCircle, label: "Inadimplentes", value: inadimplentes, color: "text-red-600", bg: "bg-red-50 dark:bg-red-900/30" },
-          ].map(({ icon: Icon, label, value, color, bg }) => (
-            <div
-              key={label}
-              className={`${bg} rounded-2xl p-4 flex items-center gap-3 border border-white/30 dark:border-gray-700/30`}
+            { icon: Users,       filtro: "todos",         label: "Total",         value: total,         color: "text-indigo-500",  bg: "bg-indigo-50 dark:bg-indigo-900/30"   },
+            { icon: UserCheck,   filtro: "ativos",        label: "Ativos",        value: ativos,        color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/30" },
+            { icon: Clock,       filtro: "pendentes",     label: "Pendentes",     value: pendentes,     color: "text-amber-600",   bg: "bg-amber-50 dark:bg-amber-900/30"     },
+            { icon: AlertCircle, filtro: "inadimplentes", label: "Inadimplentes", value: inadimplentes, color: "text-red-600",     bg: "bg-red-50 dark:bg-red-900/30"         },
+            { icon: Users,       filtro: "inquilinos",    label: "Inquilinos",    value: inquilinos,    color: "text-gray-600",    bg: "bg-gray-100 dark:bg-gray-700/50"      },
+            { icon: Users,       filtro: "proprietarios", label: "Proprietários", value: proprietarios, color: "text-sky-600",     bg: "bg-sky-50 dark:bg-sky-900/30"         },
+          ].map(({ icon: Icon, filtro, label, value, color, bg }) => (
+            <button
+              key={filtro}
+              onClick={() => setFiltroStatus(filtro)}
+              className={`${bg} rounded-2xl p-4 flex items-center gap-3 border transition-all duration-150 text-left w-full hover:scale-[1.02] hover:shadow-md ${
+                filtroStatus === filtro
+                  ? "border-indigo-400 ring-2 ring-indigo-300 dark:ring-indigo-700"
+                  : "border-white/30 dark:border-gray-700/30"
+              }`}
             >
               <Icon className={`w-5 h-5 ${color} flex-shrink-0`} />
               <div>
                 <p className={`text-xl font-bold ${color}`}>{value}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
               </div>
-            </div>
+            </button>
           ))}
         </div>
 
@@ -374,10 +391,12 @@ export default function Usuarios() {
           </div>
           <div className="flex flex-wrap gap-2">
             {[
-              { key: "todos", label: "Todos" },
-              { key: "ativos", label: "Ativos" },
-              { key: "pendentes", label: "Pendentes" },
+              { key: "todos",         label: "Todos"         },
+              { key: "ativos",        label: "Ativos"        },
+              { key: "pendentes",     label: "Pendentes"     },
               { key: "inadimplentes", label: "Inadimplentes" },
+              { key: "inquilinos",    label: "Inquilinos"    },
+              { key: "proprietarios", label: "Proprietários" },
             ].map(({ key, label }) => (
               <button
                 key={key}

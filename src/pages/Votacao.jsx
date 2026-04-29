@@ -114,6 +114,26 @@ export default function Votacao() {
       </div>
     );
 
+  if (usuario?.role === "inquilino" && !usuario?.procuracao)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col items-center justify-center px-4">
+        <Navbar mostrarVoltar={true} />
+        <div className="w-full max-w-md bg-white/40 dark:bg-gray-800/50 backdrop-blur-md rounded-3xl shadow-lg border border-white/30 dark:border-gray-700/30 p-8 text-center mt-10">
+          <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+            Participação bloqueada
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+            Prezado(a), devido à não apresentação de procuração para representar esta unidade, não há direito a voto.
+          </p>
+        </div>
+      </div>
+    );
+
   if (usuario?.inadimplente)
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col items-center justify-center px-4">

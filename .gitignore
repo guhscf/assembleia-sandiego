@@ -16,6 +16,7 @@
 /android
 
 # misc
+.env
 .DS_Store
 .idea
 .env.local

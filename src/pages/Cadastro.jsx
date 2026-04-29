@@ -90,7 +90,7 @@ export default function Cadastro() {
           cpf,
           bloco,
           apartamento,
-          role: "morador",
+          role: "inquilino",
           ativo: false,
           data_cadastro: new Date().toISOString(),
         },

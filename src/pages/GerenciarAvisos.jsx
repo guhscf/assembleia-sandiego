@@ -135,7 +135,7 @@ export default function GerenciarAvisos() {
           enviarNotificacao({
             titulo: "Novo aviso",
             corpo: payload.titulo,
-            role: "morador",
+            role: null,
           });
         }
       }

@@ -147,13 +147,11 @@ function AppInner() {
     if (carregando) return;
 
     if (usuario && perfil) {
-      const jaNaRota =
-        (perfil === "admin" && location.pathname !== "/") ||
-        (perfil === "morador" && location.pathname !== "/");
+      const jaNaRota = location.pathname !== "/";
 
       if (!jaNaRota) {
         if (perfil === "admin") navigate("/admin", { replace: true });
-        if (perfil === "morador") navigate("/home", { replace: true });
+        else navigate("/home", { replace: true });
       }
     }
   }, [usuario, perfil, carregando, navigate, location.pathname]);
@@ -189,7 +187,7 @@ function AppInner() {
             />
             <Route
               path="/votacao"
-              element={usuario && perfil === "morador" ? <Votacao /> : <Navigate to="/" />}
+              element={usuario && perfil !== "admin" ? <Votacao /> : <Navigate to="/" />}
             />
             <Route
               path="/admin"
