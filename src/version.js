@@ -1,1 +1,1 @@
-export const VERSAO_APP = "1.2.0";
+export const VERSAO_APP = "1.2.1";

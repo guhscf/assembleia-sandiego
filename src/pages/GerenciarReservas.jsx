@@ -149,6 +149,45 @@ export default function GerenciarReservas() {
     }
   };
 
+  const cancelar = async () => {
+    const confirm = await Swal.fire({
+      title: "Cancelar reserva?",
+      text: `Tem certeza que deseja cancelar a reserva ${selecionada.codigo_reserva}? A data ficará disponível novamente.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sim, cancelar",
+      cancelButtonText: "Voltar",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    setProcessando(true);
+    try {
+      const { error } = await supabase
+        .from("reservas")
+        .update({ status: "cancelada", updated_at: new Date().toISOString() })
+        .eq("id", selecionada.id);
+
+      if (error) throw error;
+
+      await Swal.fire({
+        title: "Reserva cancelada",
+        text: "A data ficará disponível novamente.",
+        icon: "success",
+        confirmButtonColor: "#6366f1",
+      });
+
+      fecharModal();
+      buscarReservas();
+    } catch {
+      Swal.fire("Erro", "Não foi possível cancelar a reserva.", "error");
+    } finally {
+      setProcessando(false);
+    }
+  };
+
   const recusar = async () => {
     if (!motivoRecusa.trim()) {
       Swal.fire("Atenção", "Informe o motivo da recusa.", "warning");
@@ -380,14 +419,24 @@ export default function GerenciarReservas() {
               {/* Ações — reservas confirmadas */}
               {selecionada.status === "confirmada" && (
                 <section className="border-t border-gray-100 dark:border-gray-700 pt-5">
-                  <button
-                    onClick={concluir}
-                    disabled={processando}
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold text-sm bg-gray-500 hover:bg-gray-600 shadow-md transition disabled:opacity-60"
-                  >
-                    <CheckCircle className="w-4 h-4" />
-                    Concluir Reserva
-                  </button>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={concluir}
+                      disabled={processando}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold text-sm bg-gray-500 hover:bg-gray-600 shadow-md transition disabled:opacity-60"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Concluir
+                    </button>
+                    <button
+                      onClick={cancelar}
+                      disabled={processando}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold text-sm bg-red-500 hover:bg-red-600 shadow-md transition disabled:opacity-60"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      Cancelar Reserva
+                    </button>
+                  </div>
                 </section>
               )}
 
