@@ -1,8 +1,0 @@
-# Download do APK -> sempre a Release mais recente do GitHub.
-# URL fixa no dominio: https://residencialsandiego.com.br/app/baixar
-# force=true garante prioridade sobre o /app/* e arquivos existentes.
-[[redirects]]
-  from = "/app/baixar"
-  to = "https://github.com/guhscf/assembleia-sandiego/releases/latest/download/sandiegoapp.apk"
-  status = 302
-  force = true
