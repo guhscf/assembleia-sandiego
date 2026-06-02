@@ -6,6 +6,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -69,9 +72,19 @@ jobs:
             "$ALIGNED"
           "$BUILD_TOOLS/apksigner" verify --verbose "$RUNNER_TEMP/app-release-signed.apk"
 
-      - name: Upload APK
+      - name: Rename APK (stable name)
+        run: cp "$RUNNER_TEMP/app-release-signed.apk" "$RUNNER_TEMP/sandiegoapp.apk"
+
+      - name: Upload APK (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: sandiego-app
-          path: ${{ runner.temp }}/app-release-signed.apk
+          path: ${{ runner.temp }}/sandiegoapp.apk
           if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ runner.temp }}/sandiegoapp.apk
+          fail_on_unmatched_files: true
