@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "840049449941",
+    "project_id": "sandiego-c20e7",
+    "storage_bucket": "sandiego-c20e7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:840049449941:android:54e7b305d48323ba83fb5c",
+        "android_client_info": {
+          "package_name": "com.residencialsandiego.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIm_u9GpWrw35Asqa4705eskhoLLNWPSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
